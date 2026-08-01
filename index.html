@@ -1,2523 +1,2052 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Aprendizado de Inglês</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .tabs {
-            display: flex;
-            background: #f5f5f5;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: #666;
-        }
-
-        .tab.active {
-            background: white;
-            color: #4CAF50;
-            border-bottom: 3px solid #4CAF50;
-        }
-
-        .tab:hover:not(.active) {
-            background: #e8e8e8;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .voice-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 12px 20px;
-            border-radius: 25px;
-            border: 2px solid #e9ecef;
-        }
-
-        .voice-control input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #4CAF50;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-        }
-
-        .btn-danger:hover {
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
-        }
-
-        .game-status {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .status-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid #4CAF50;
-        }
-
-        .status-card h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .status-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .game-area {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            min-height: 400px;
-        }
-
-        .question {
-            font-size: 1.4rem;
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        .english-phrase {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #2196F3;
-            margin: 20px 0;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            border-left: 5px solid #2196F3;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .answer-area {
-            margin: 30px 0;
-        }
-
-        .answer-area h4 {
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .selected-words {
-            min-height: 80px;
-            background: white;
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            transition: border-color 0.3s ease;
-        }
-
-        .selected-words.has-words {
-            border-color: #4CAF50;
-            border-style: solid;
-        }
-
-        .selected-words.empty {
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-style: italic;
-        }
-
-        .word-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .word-btn {
-            background: linear-gradient(135deg, #FF9800, #F57C00);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-width: 80px;
-        }
-
-        .word-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
-        }
-
-        .word-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .selected-word {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .selected-word:hover {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            transform: translateY(-1px);
-        }
-
-        .game-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .phrases-list {
-            max-height: 441px;
-            overflow-y: auto;
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .phrase-item {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .phrase-content {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .phrase-english {
-            font-weight: bold;
-            color: #2196F3;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .phrase-portuguese {
-            color: #666;
-        }
-
-        .phrase-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            display: flex;
-            margin-bottom: 20px;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 100vh;
-            /* altura máxima da tela */
-            overflow-y: auto;
-            /* scroll interno se necessário */
-            position: relative;
-            animation: modalSlideIn 0.3s ease;
-            box-sizing: border-box;
-            /* evita problemas de padding */
-        }
-
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .close:hover {
-            color: #333;
-        }
-
-        .feedback {
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: none;
-            animation: feedbackSlideIn 0.3s ease;
-        }
-
-        @keyframes feedbackSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feedback.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
-        }
-
-        .feedback.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-        }
-
-        .game-complete {
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-
-        .game-complete h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .game-complete p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-        }
-
-        /* Filtros do Jogo */
-        .game-filters {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin: 0 15px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .filter-group label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .filter-group select {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background: white;
-            cursor: pointer;
-            min-width: 120px;
-        }
-
-        .filter-group select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-
-        /* Indicadores de dificuldade */
-        .difficulty-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: white;
-            margin-left: 8px;
-        }
-
-        .difficulty-fácil {
-            background-color: #4CAF50;
-        }
-
-        .difficulty-médio {
-            background-color: #FF9800;
-        }
-
-        .difficulty-difícil {
-            background-color: #f44336;
-        }
-
-        .difficulty-extremo {
-            background-color: #9C27B0;
-        }
-
-        .category-badge {
-            background-color: #2196F3;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            margin-left: 8px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .controls .btn {
-            white-space: nowrap;
-        }
-
-        #importFile {
-            display: none;
-        }
-
-
-        /* Estilos do Sistema de Níveis */
-        .xp-bar {
-            width: 100%;
-            height: 8px;
-            background: #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 5px 0;
-        }
-
-        .xp-progress {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #2196F3);
-            transition: width 0.5s ease;
-        }
-
-        .xp-text {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .player-title {
-            font-size: 0.8rem;
-            color: #FF9800;
-            font-weight: bold;
-        }
-
-        .level-up-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .level-up-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            animation: levelUpBounce 0.6s ease;
-        }
-
-        .level-change {
-            font-size: 3rem;
-            font-weight: bold;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .old-level {
-            color: #ffeb3b;
-        }
-
-        .new-level {
-            color: #4caf50;
-            animation: glow 1s ease-in-out infinite alternate;
-        }
-
-        .reward {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
-
-        .xp-bar-big {
-            width: 200px;
-            height: 12px;
-            background: #ddd;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 10px auto;
-        }
-
-        .titles-list {
-            font-size: 0.8rem;
-            color: #FF9800;
-            margin-top: 5px;
-        }
-
-        .score-detail {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .streak-bonus {
-            font-size: 0.8rem;
-            color: #FF9800;
-            margin-top: 3px;
-        }
-
-        .status-card.streak-card {
-            border-left: 4px solid #FF5722;
-            background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 152, 0, 0.1));
-        }
-
-        .status-card.level-card {
-            border-left: 4px solid #2196F3;
-            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(103, 58, 183, 0.1));
-        }
-
-        .multiple-choice-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .choice-btn {
-            padding: 15px 20px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            font-size: 16px;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-
-        .choice-btn:hover {
-            background: #f0f8ff;
-            border-color: #4CAF50;
-            transform: translateY(-2px);
-        }
-
-        .choice-btn.correct {
-            background: #d4edda;
-            border-color: #28a745;
-            color: #155724;
-        }
-
-        .choice-btn.incorrect {
-            background: #f8d7da;
-            border-color: #dc3545;
-            color: #721c24;
-        }
-
-        .choice-btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        select {
-            width: 100%;
-            /* ocupa toda a largura do container */
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: white;
-            font-size: 16px;
-            appearance: none;
-            /* remove o estilo padrão do sistema */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 16px;
-            cursor: pointer;
-        }
-
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes levelUpBounce {
-            0% {
-                transform: scale(0.5) translateY(50px);
-                opacity: 0;
-            }
-
-            50% {
-                transform: scale(1.1) translateY(-10px);
-            }
-
-            100% {
-                transform: scale(1) translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px #4caf50;
-            }
-
-            to {
-                text-shadow: 0 0 20px #4caf50, 0 0 30px #4caf50;
-            }
-        }
-
-
-        @media (max-width: 768px) {
-            .container {
-                min-height: 872px;
-                margin: -13px;
-                border-radius: 15px;
-            }
-
-            .header {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .voice-control {
-                justify-content: center;
-            }
-
-            .phrase-item {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .phrase-actions {
-                justify-content: center;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .modal-content {
-                margin: 10% auto;
-                width: 95%;
-                padding: 20px;
-            }
-
-            .game-status {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .word-btn,
-            .selected-word {
-                font-size: 0.9rem;
-                padding: 10px 15px;
-            }
-
-            .controls {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-evenly;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-            .status-card.streak-card .status-value {
-                display: block;
-                width: 100%;
-                box-sizing: border-box;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14161C">
+<title>Aprende Inglês — sem ilusões</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#14161C;
+  --surface:#1C1F28;
+  --surface-2:#242835;
+  --surface-3:#2C3140;
+  --border:#2E323F;
+  --text:#EDEEF2;
+  --text-muted:#9297A6;
+  --text-faint:#5B6072;
+
+  --accent:#E8B84B;      /* amber highlighter — primary action / focus */
+  --accent-ink:#1A1506;
+  --teal:#4FBFA8;         /* good / review / mastery */
+  --blue:#5B9FE8;         /* easy */
+  --orange:#E8935A;       /* hard */
+  --red:#E2645A;          /* again / lapse */
+
+  --radius-s:8px;
+  --radius-m:14px;
+  --radius-l:22px;
+
+  --font-display:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
+
+  --nav-h:64px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:none;
+}
+button,input,textarea,select{font-family:inherit;color:inherit;}
+button{-webkit-appearance:none;appearance:none;background:none;border:none;cursor:pointer;}
+input,textarea,select{outline:none;}
+h1,h2,h3,p{margin:0;}
+ul{list-style:none;margin:0;padding:0;}
+a{color:inherit;}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+::-webkit-scrollbar{width:0;height:0;}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+#app{
+  max-width:560px;
+  margin:0 auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+.app-header{
+  padding:calc(18px + var(--safe-t)) 20px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  background:linear-gradient(var(--bg) 80%, transparent);
+  z-index:5;
+}
+.app-header .brand{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.app-header .brand .mark{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:19px;
+  letter-spacing:-0.02em;
+}
+.app-header .brand .mark em{
+  font-style:normal;
+  color:var(--accent);
+}
+.app-header .brand .tag{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.04em;
+  color:var(--text-faint);
+  text-transform:uppercase;
+}
+.streak-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:7px 12px;
+  border-radius:999px;
+  font-family:var(--font-mono);
+  font-size:13px;
+  font-weight:600;
+}
+.streak-badge .flame{filter:saturate(1.3);}
+.streak-badge.is-zero{color:var(--text-faint);}
+
+main#views{
+  flex:1;
+  padding-bottom:calc(var(--nav-h) + var(--safe-b) + 24px);
+}
+
+.view{display:none;padding:4px 20px 8px;animation:fadeIn .25s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.section-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:0.01em;
+  color:var(--text);
+  margin:26px 0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.section-title .eyebrow{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:0.08em;
+  color:var(--text-faint);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:3px;
+}
+
+/* ============================================================
+   BOTTOM NAV
+   ============================================================ */
+#bottom-nav{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  max-width:560px;
+  margin:0 auto;
+  height:calc(var(--nav-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  background:rgba(28,31,40,0.92);
+  backdrop-filter:blur(14px);
+  border-top:1px solid var(--border);
+  display:flex;
+  z-index:20;
+}
+.nav-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  color:var(--text-faint);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:0.01em;
+  position:relative;
+}
+.nav-btn svg{width:21px;height:21px;stroke:var(--text-faint);fill:none;stroke-width:1.8;transition:stroke .15s;}
+.nav-btn.active{color:var(--accent);}
+.nav-btn.active svg{stroke:var(--accent);}
+.nav-btn .dot{
+  position:absolute;top:2px;right:calc(50% - 20px);
+  width:7px;height:7px;border-radius:50%;background:var(--red);
+  display:none;
+}
+.nav-btn .dot.show{display:block;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 20px;
+  border-radius:var(--radius-m);
+  font-weight:700;
+  font-size:15px;
+  transition:transform .1s, opacity .15s;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--accent);color:var(--accent-ink);}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border);}
+.btn-ghost{background:transparent;color:var(--text-muted);}
+.btn-danger{background:rgba(226,100,90,0.14);color:var(--red);}
+.btn-block{width:100%;}
+.btn-sm{padding:9px 14px;font-size:13px;border-radius:var(--radius-s);}
+.btn:disabled{opacity:0.4;pointer-events:none;}
+
+/* ============================================================
+   HOME VIEW
+   ============================================================ */
+.hero-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-l);
+  padding:28px 24px 24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero-card::before{
+  content:"";
+  position:absolute;top:-40%;right:-20%;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(232,184,75,0.16),transparent 70%);
+}
+.hero-card .eyebrow{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;
+  color:var(--text-faint);text-transform:uppercase;
+}
+.hero-num{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:64px;
+  line-height:1;
+  margin:10px 0 4px;
+  letter-spacing:-0.03em;
+}
+.hero-sub{color:var(--text-muted);font-size:14px;margin-bottom:20px;}
+.stat-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:18px;
+}
+.stat-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-m);padding:14px 8px;text-align:center;
+}
+.stat-box .n{font-family:var(--font-mono);font-weight:700;font-size:22px;}
+.stat-box .l{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.stat-box.new .n{color:var(--text-muted);}
+.stat-box.learning .n{color:var(--orange);}
+.stat-box.review .n{color:var(--teal);}
+
+.week-chart{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-m);padding:16px;
+}
+.week-chart .row{display:flex;align-items:flex-end;gap:8px;height:80px;margin-top:12px;}
+.week-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;}
+.week-chart .bar{width:100%;max-width:22px;background:var(--surface-3);border-radius:5px 5px 0 0;min-height:3px;transition:height .4s ease;}
+.week-chart .bar.has-reviews{background:var(--teal);}
+.week-chart .bar.today{background:var(--accent);}
+.week-chart .lbl{font-family:var(--font-mono);font-size:9.5px;color:var(--text-faint);text-transform:uppercase;}
+
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--text-muted);
+}
+.empty-state .icon{font-size:36px;margin-bottom:10px;opacity:0.6;}
+.empty-state .title{font-weight:700;color:var(--text);margin-bottom:6px;}
+.empty-state p{font-size:13.5px;line-height:1.5;}
+
+/* ============================================================
+   REVIEW / FLASHCARD VIEW
+   ============================================================ */
+.review-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px;}
+.progress-track{
+  height:5px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:8px 0 22px;
+}
+.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease;}
+
+.card-stage{perspective:1400px;margin:10px 0 22px;}
+.flashcard{
+  position:relative;
+  min-height:280px;
+  border-radius:var(--radius-l);
+  transition:transform .5s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+  cursor:pointer;
+}
+.flashcard.flipped{transform:rotateX(180deg);}
+.card-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  border-radius:var(--radius-l);
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:22px;
+  display:flex;flex-direction:column;
+}
+.card-face.back{transform:rotateX(180deg);}
+.card-face .card-top{display:flex;justify-content:space-between;align-items:center;}
+.card-face .card-no{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+.card-tag{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px;background:var(--surface-2);color:var(--text-muted);
+}
+.card-face .card-mid{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:10px;padding:10px 0;
+}
+.card-dir{font-family:var(--font-mono);font-size:10.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+.card-word{font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:-0.01em;line-height:1.15;}
+.card-hint{font-size:13px;color:var(--text-faint);margin-top:4px;}
+.card-face.back .divider{width:36px;height:2px;background:var(--border);margin:2px 0;}
+.card-answer{font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--accent);}
+.card-example{font-size:13.5px;color:var(--text-muted);line-height:1.45;margin-top:6px;font-style:italic;}
+.card-example .tr{display:block;font-style:normal;color:var(--text-faint);margin-top:2px;}
+.card-notes{font-size:12px;color:var(--text-faint);margin-top:8px;line-height:1.4;}
+
+.type-answer-wrap{margin:4px 0 16px;}
+.type-answer-wrap input{
+  width:100%;background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius-m);padding:15px 16px;font-size:17px;color:var(--text);
+  text-align:center;font-weight:600;
+}
+.type-answer-wrap input:focus{border-color:var(--accent);}
+.type-feedback{
+  text-align:center;margin-top:10px;font-size:13.5px;padding:10px;border-radius:var(--radius-s);
+}
+.type-feedback.correct{background:rgba(79,191,168,0.12);color:var(--teal);}
+.type-feedback.incorrect{background:rgba(226,100,90,0.12);color:var(--red);}
+
+.rate-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;}
+.rate-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:12px 4px;border-radius:var(--radius-m);border:1px solid var(--border);
+  font-weight:700;font-size:12.5px;
+}
+.rate-btn .interval{font-family:var(--font-mono);font-size:10px;font-weight:500;opacity:0.85;}
+.rate-btn.again{background:rgba(226,100,90,0.12);color:var(--red);}
+.rate-btn.hard{background:rgba(232,147,90,0.12);color:var(--orange);}
+.rate-btn.good{background:rgba(79,191,168,0.12);color:var(--teal);}
+.rate-btn.easy{background:rgba(91,159,232,0.12);color:var(--blue);}
+.rate-btn:active{transform:scale(0.95);}
+
+.session-done{text-align:center;padding:50px 10px;}
+.session-done .big{font-size:44px;margin-bottom:6px;}
+.session-done h2{font-family:var(--font-display);font-size:20px;margin-bottom:8px;}
+.session-done p{color:var(--text-muted);font-size:14px;margin-bottom:24px;}
+
+/* ============================================================
+   LIBRARY VIEW
+   ============================================================ */
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);
+  padding:11px 14px;margin-top:8px;
+}
+.search-bar svg{width:16px;height:16px;stroke:var(--text-faint);fill:none;stroke-width:2;flex-shrink:0;}
+.search-bar input{background:none;border:none;width:100%;font-size:14.5px;color:var(--text);}
+.search-bar input::placeholder{color:var(--text-faint);}
+
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;margin:0 -20px;padding-left:20px;padding-right:20px;}
+.chip{
+  flex-shrink:0;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:99px;
+  background:var(--surface);border:1px solid var(--border);color:var(--text-muted);
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.chip .swatch{width:7px;height:7px;border-radius:50%;}
+.chip.active{background:var(--surface-3);color:var(--text);border-color:var(--text-faint);}
+
+.word-list{margin-top:10px;}
+.word-row{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 4px;border-bottom:1px solid var(--border);
+}
+.word-row .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.status-dot.new{background:var(--text-faint);}
+.status-dot.learning{background:var(--orange);}
+.status-dot.review{background:var(--teal);}
+.word-row .info{flex:1;min-width:0;}
+.word-row .en{font-weight:700;font-size:15px;}
+.word-row .pt{font-size:13px;color:var(--text-muted);margin-top:1px;}
+.word-row .meta{text-align:right;flex-shrink:0;}
+.word-row .due{font-family:var(--font-mono);font-size:10.5px;color:var(--text-faint);}
+.word-row .due.today{color:var(--accent);}
+.word-row .due.late{color:var(--red);}
+
+.fab{
+  position:fixed;
+  right:calc(50% - 280px + 20px);
+  bottom:calc(var(--nav-h) + var(--safe-b) + 18px);
+  width:56px;height:56px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:400;
+  box-shadow:0 6px 20px rgba(232,184,75,0.35);
+  z-index:15;
+}
+@media (max-width:600px){
+  .fab{left:20px;}
+}
+.fab:active{transform:scale(0.94);}
+
+/* ============================================================
+   CATEGORY LIST
+   ============================================================ */
+.cat-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 4px;border-bottom:1px solid var(--border);
+}
+.cat-row .swatch{width:14px;height:14px;border-radius:6px;flex-shrink:0;}
+.cat-row .info{flex:1;}
+.cat-row .name{font-weight:700;font-size:15px;}
+.cat-row .count{font-size:12.5px;color:var(--text-muted);margin-top:1px;}
+.cat-row .actions{display:flex;gap:6px;}
+.icon-btn{
+  width:34px;height:34px;border-radius:var(--radius-s);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);border:1px solid var(--border);
+}
+.icon-btn svg{width:16px;height:16px;stroke:var(--text-muted);fill:none;stroke-width:1.8;}
+
+.swatch-picker{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+.swatch-opt{width:32px;height:32px;border-radius:50%;border:2px solid transparent;}
+.swatch-opt.selected{border-color:var(--text);}
+
+/* ============================================================
+   SETTINGS VIEW
+   ============================================================ */
+.settings-group{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);
+  padding:6px 16px;margin-top:10px;
+}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);gap:12px;
+}
+.settings-row:last-child{border-bottom:none;}
+.settings-row .lbl{font-size:14px;font-weight:600;}
+.settings-row .desc{font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.4;}
+.seg-control{display:flex;background:var(--surface-2);border-radius:var(--radius-s);padding:3px;gap:2px;}
+.seg-opt{padding:7px 10px;font-size:12px;font-weight:600;border-radius:6px;color:var(--text-muted);}
+.seg-opt.active{background:var(--surface-3);color:var(--text);}
+select.native-select{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-s);
+  padding:8px 10px;font-size:13px;color:var(--text);
+}
+.info-block{
+  font-size:13px;line-height:1.6;color:var(--text-muted);
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);
+  padding:16px;margin-top:16px;
+}
+.info-block strong{color:var(--text);}
+.info-block h4{font-family:var(--font-display);font-size:13.5px;color:var(--text);margin:0 0 8px;}
+
+/* ============================================================
+   MODAL / BOTTOM SHEET
+   ============================================================ */
+.overlay{
+  position:fixed;inset:0;background:rgba(10,11,15,0.6);
+  display:none;align-items:flex-end;justify-content:center;z-index:50;
+}
+.overlay.open{display:flex;}
+.sheet{
+  width:100%;max-width:560px;max-height:88vh;overflow-y:auto;
+  background:var(--surface);border-radius:24px 24px 0 0;
+  padding:10px 20px calc(24px + var(--safe-b));
+  animation:slideUp .25s cubic-bezier(.3,.7,.4,1);
+}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:6px auto 14px;}
+.sheet-title{font-family:var(--font-display);font-weight:800;font-size:18px;margin-bottom:16px;}
+
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px;}
+.field input,.field textarea{
+  width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-s);
+  padding:12px 13px;font-size:14.5px;color:var(--text);
+}
+.field textarea{resize:vertical;min-height:56px;}
+.field input:focus,.field textarea:focus{border-color:var(--accent);}
+.field-hint{font-size:11px;color:var(--text-faint);margin-top:5px;}
+
+.sheet-actions{display:flex;gap:10px;margin-top:18px;}
+.sheet-actions .btn{flex:1;}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+#toast{
+  position:fixed;left:50%;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);
+  transform:translate(-50%,20px);
+  background:var(--surface-3);border:1px solid var(--border);
+  padding:12px 18px;border-radius:99px;font-size:13.5px;font-weight:600;
+  opacity:0;pointer-events:none;transition:all .25s ease;
+  z-index:60;max-width:80%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.3);
+}
+#toast.show{opacity:1;transform:translate(-50%,0);}
+
+.hidden{display:none !important;}
+</style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎓 English Learning Game</h1>
-            <!-- <p>Monte as frases na ordem correta!</p> -->
-        </div>
+<div id="app">
 
-        <div class="tabs">
-            <button class="tab active" data-tab="game">Jogar</button>
-            <button class="tab" data-tab="manage">Gerenciar Frases</button>
-        </div>
-
-        <div class="content">
-            <!-- Game Tab -->
-            <div id="game" class="tab-content active">
-                <div class="controls">
-                    <div class="voice-control">
-                        <input type="checkbox" id="enableVoice" checked>
-                        <label for="enableVoice">🔊 Falar</label>
-                    </div>
-
-                    <!-- NOVOS FILTROS -->
-                    <div class="game-filters">
-                        <div class="filter-group">
-                            <label for="categorySelect">📂 Categoria:</label>
-                            <select id="categorySelect">
-                                <option value="all">Todas</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="difficultySelect">⭐ Dificuldade:</label>
-                            <select id="difficultySelect">
-                                <option value="all">Todas</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button class="btn" onclick="startGame()">Novo Jogo</button>
-                    <button class="btn btn-secondary" onclick="resetRound()" id="resetBtn" style="display: none;">🔄
-                        Resetar</button>
-                </div>
-
-                <div class="game-status">
-                    <div class="status-card">
-                        <h3>Pontuação</h3>
-                        <div class="status-value">
-                            <span id="currentScore">0</span> / <span id="totalQuestions">0</span>
-                        </div>
-                    </div>
-                    <div class="status-card">
-                        <h3>Pergunta</h3>
-                        <div class="status-value">
-                            <span id="currentQuestionNum">0</span> / <span id="totalPhrases">0</span>
-                        </div>
-                    </div>
-                    <div class="status-card">
-                        <h3>Restantes</h3>
-                        <div class="status-value" id="remainingQuestions">0</div>
-                    </div>
-                </div>
-
-                <div class="game-area">
-                    <div id="gameContent">
-                        <div style="text-align: center; padding: 40px;">
-                            <h2>🎮 Clique em "Novo Jogo" para começar!</h2>
-                            <p>Monte as palavras na ordem correta para formar a tradução em português.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="feedback" id="feedback"></div>
-            </div>
-
-            <!-- Manage Tab -->
-            <div id="manage" class="tab-content">
-                <div class="controls">
-                    <button class="btn" onclick="openAddModal()">➕ Adicionar</button>
-                    <button class="btn btn-secondary" onclick="exportPhrases()">📤 Exportar</button>
-                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥
-                        Importar</button>
-                    <input type="file" id="importFile" accept=".json" style="display: none;"
-                        onchange="importPhrases(event)">
-                    <button class="btn btn-danger" onclick="clearAllPhrases()">🗑️ Deletar</button>
-                </div>
-
-                <div class="phrases-list" id="phrasesList">
-                    <!-- Phrases will be loaded here -->
-                </div>
-            </div>
-        </div>
+  <header class="app-header">
+    <div class="brand">
+      <div class="mark">Aprende<em>Inglês</em></div>
+      <div class="tag">estudo real, sem ilusões</div>
     </div>
-
-    <!-- Add/Edit Modal -->
-    <div id="phraseModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Adicionar Nova Frase</h2>
-            <form id="phraseForm">
-                <div class="form-group">
-                    <label for="englishPhrase" id="labelEnglish">Frase em Inglês:</label>
-                    <input type="text" id="englishPhrase" required>
-                </div>
-                <div class="form-group">
-                    <label for="portugueseTranslation" id="labelPortuguese">Tradução em Português:</label>
-                    <input type="text" id="portugueseTranslation" required>
-                </div>
-                <!-- ADICIONAR ESTES NOVOS CAMPOS: -->
-                <div class="form-group">
-                    <label for="categorySelect2">📂 Categoria:</label>
-                    <select id="categorySelect2" required>
-                        <option value="">Selecione uma categoria</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="difficultySelect2">⭐ Dificuldade:</label>
-                    <select id="difficultySelect2" required>
-                        <option value="">Selecione a dificuldade</option>
-                    </select>
-                    <label for="gameTypeSelect">Tipo de Jogo:</label>
-                    <select id="gameTypeSelect" required>
-                        <option value="">Selecione o tipo</option>
-                    </select>
-                    <label for="questionDirection">Direção da Pergunta:</label>
-                    <select id="questionDirection" required>
-                        <option value="">Selecione a direção</option>
-                        <option value="en-pt">Inglês → Português</option>
-                        <option value="pt-en">Português → Inglês</option>
-                    </select>
-                    <div id="customOptionsContainer" style="display: none;">
-                        <label for="customOptions">Opções de Resposta (uma por linha):</label>
-                        <textarea id="customOptions"
-                            placeholder="Digite uma opção por linha...&#10;Exemplo:&#10;Bom dia!&#10;Boa tarde!&#10;Boa noite!&#10;Olá!"
-                            rows="4"></textarea>
-                        <small>Inclua a resposta correta entre as opções</small>
-                    </div>
-                </div>
-
-                <div class="controls">
-                    <button type="submit" class="btn">Salvar</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                </div>
-            </form>
-        </div>
+    <div class="streak-badge" id="streak-badge">
+      <span class="flame">🔥</span><span id="streak-count">0</span>
     </div>
-    <template id="endGameTemplate">
-        <div class="game-complete">
-            <h2>🎮 Jogo Concluído!</h2>
-            <p class="end-message"></p>
+  </header>
 
-            <div class="score-summary">
-                <div class="score-item">
-                    <span class="score-label">Pontuação da Rodada:</span>
-                    <span class="score-value" id="roundScore"></span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Acertos:</span>
-                    <span class="score-value" id="correctAnswers"></span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Maior Sequência:</span>
-                    <span class="score-value" id="maxStreak"></span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Pontuação Total:</span>
-                    <span class="score-value" id="totalScore"></span>
-                </div>
-                <div class="score-item bonus" id="perfectBonusContainer" style="display: none;">
-                    <span class="score-label">🏆 Bonus Perfeito:</span>
-                    <span class="score-value" id="perfectBonus"></span>
-                </div>
-            </div>
+  <main id="views">
 
-            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 15px 30px;">
-                🔄 Jogar Novamente
-            </button>
-            <button class="btn btn-secondary" onclick="showStats()" style="margin-left: 10px;">
-                📊 Ver Estatísticas
-            </button>
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <div class="hero-card">
+        <span class="eyebrow">hoje para revisar</span>
+        <div class="hero-num" id="due-count">0</div>
+        <div class="hero-sub" id="due-sub">cartões esperando por você</div>
+        <button class="btn btn-primary btn-block" id="btn-start-review">Começar revisão</button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-box new"><div class="n" id="stat-new">0</div><div class="l">novas</div></div>
+        <div class="stat-box learning"><div class="n" id="stat-learning">0</div><div class="l">aprendendo</div></div>
+        <div class="stat-box review"><div class="n" id="stat-review">0</div><div class="l">em revisão</div></div>
+      </div>
+
+      <div class="section-title">
+        <span><span class="eyebrow">últimos 7 dias</span>Ritmo de estudo</span>
+      </div>
+      <div class="week-chart">
+        <div class="row" id="week-bars"></div>
+      </div>
+
+      <div id="home-empty" class="empty-state hidden">
+        <div class="icon">📇</div>
+        <div class="title">Sua biblioteca está vazia</div>
+        <p>Adicione palavras na aba Biblioteca ou importe o pacote inicial em Ajustes para começar a treinar.</p>
+      </div>
+    </section>
+
+    <!-- REVIEW -->
+    <section class="view" id="view-review">
+      <div id="review-session">
+        <div class="review-topbar">
+          <button class="btn-ghost btn-sm" id="btn-exit-review">← Sair</button>
+          <span class="card-no" id="review-progress-label">0/0</span>
         </div>
-    </template>
+        <div class="progress-track"><div class="progress-fill" id="review-progress-fill" style="width:0%"></div></div>
 
-    <div id="gameContent"></div>
-
-    <template id="statsTemplate">
-        <div class="stats-view">
-            <h2>📊 Suas Estatísticas</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="totalScore"></div>
-                    <div class="stat-label">Pontos Totais</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="gamesPlayed"></div>
-                    <div class="stat-label">Jogos Jogados</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="avgScore"></div>
-                    <div class="stat-label">Média por Jogo</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="accuracy"></div>
-                    <div class="stat-label">Precisão</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="maxStreak"></div>
-                    <div class="stat-label">Maior Sequência</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-stat="correctAnswers"></div>
-                    <div class="stat-label">Total de Acertos</div>
-                </div>
+        <div class="card-stage">
+          <div class="flashcard" id="flashcard">
+            <div class="card-face front">
+              <div class="card-top">
+                <span class="card-no" id="card-no-front">Nº 0000</span>
+                <span class="card-tag" id="card-tag-front">—</span>
+              </div>
+              <div class="card-mid">
+                <span class="card-dir" id="card-dir-front">inglês → português</span>
+                <span class="card-word" id="card-word-front">—</span>
+                <span class="card-hint" id="card-hint-front">toque para virar</span>
+              </div>
             </div>
-            <div class="stat-card level-card-big">
-                <div class="stat-number">⭐ <span data-stat="level"></span></div>
-                <div class="stat-label">Nível Atual</div>
-                <div class="level-progress">
-                    <div class="xp-bar-big">
-                        <div class="xp-progress" data-stat="xpProgress" style="width: 0%"></div>
-                    </div>
-                    <small><span data-stat="currentXP"></span>/<span data-stat="xpNeeded"></span> XP</small>
-                </div>
+            <div class="card-face back">
+              <div class="card-top">
+                <span class="card-no" id="card-no-back">Nº 0000</span>
+                <span class="card-tag" id="card-tag-back">—</span>
+              </div>
+              <div class="card-mid">
+                <span class="card-word" id="card-word-back">—</span>
+                <div class="divider"></div>
+                <span class="card-answer" id="card-answer-back">—</span>
+                <span class="card-example" id="card-example-back"></span>
+                <span class="card-notes" id="card-notes-back"></span>
+              </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" data-stat="totalXP"></div>
-                <div class="stat-label">XP Total</div>
-            </div>
-            <div class="stat-card titles-card" id="titlesCard" style="display:none;">
-                <div class="stat-number" data-stat="titlesCount"></div>
-                <div class="stat-label">Títulos Conquistados</div>
-                <div class="titles-list" data-stat="titlesList"></div>
-            </div>
-            <div style="margin-top: 30px;">
-                <button class="btn" onclick="startGame()">🎮 Novo Jogo</button>
-                <button class="btn btn-secondary" onclick="resetStats()" style="margin-left: 10px;">🔄 Resetar
-                    Estatísticas</button>
-            </div>
+          </div>
         </div>
-    </template>
 
-    <!-- <script src="script.js"></script> -->
-    <script>
-        // ==========================================
-        // 1. CONFIGURAÇÕES E CONSTANTES
-        // ==========================================
-
-        // Array principal de frases
-        let phrases = [/* dados das frases */
-            {
-                "id": 1,
-                "english": "This is an apple.",
-                "portuguese": "Isto é uma maçã.",
-                "difficulty": "fácil",
-                "category": "frutas",
-                "type": "selection"
-            }
-        ];
-
-        //Constantes do sistema
-        const DIFFICULTIES = ['fácil', 'médio', 'difícil', 'extremo'];
-        const CATEGORIES = {/* categorias */
-            'frutas': 'Frutas',
-            'animais': 'Animais',
-            'cores': 'Cores',
-            'números': 'Números',
-            'família': 'Família',
-            'casa': 'Casa',
-            'comida': 'Comida',
-            'frases-gerais': 'Frases Gerais'
-        };
-        const SCORE_SYSTEM = {// sistema de pontuação, Sistema de Score Avançado
-            points: {
-                'fácil': 10,
-                'médio': 20,
-                'difícil': 30,
-                'extremo': 50
-            },
-            bonuses: {
-                perfectRound: 100,    // Bonus por acertar tudo
-                streak: 5,           // Bonus por sequência
-                fastAnswer: 10       // Bonus por resposta rápida
-            }
-        };
-        const LEVEL_SYSTEM = {/* sistema de níveis */
-            baseXP: 100,        // XP necessário para o nível 1
-            multiplier: 1.5,    // Multiplicador de XP por nível
-            maxLevel: 50,       // Nível máximo
-            rewards: {
-                1: { type: 'unlock', message: 'Bem-vindo ao jogo!' },
-                5: { type: 'bonus', value: 100, message: '🎉 Bonus de 100 pontos!' },
-                10: { type: 'unlock', message: '🔓 Modo difícil desbloqueado!' },
-                15: { type: 'bonus', value: 250, message: '🎁 Bonus de 250 pontos!' },
-                20: { type: 'unlock', message: '🏆 Modo extremo desbloqueado!' },
-                25: { type: 'bonus', value: 500, message: '💎 Bonus de 500 pontos!' },
-                30: { type: 'title', value: 'Poliglota', message: '👑 Título desbloqueado: Poliglota!' },
-                40: { type: 'bonus', value: 1000, message: '🌟 Mega bonus de 1000 pontos!' },
-                50: { type: 'title', value: 'Mestre', message: '🏅 Título máximo: Mestre dos Idiomas!' }
-            }
-        };
-        const GAME_TYPES = {//tipo da pergunta
-            'selection': 'Seleção de Palavras',
-            'multiple': 'Múltipla Escolha'
-        };
-        const QUESTION_DIRECTIONS = {//direçao da pergunta ingles portugues > portugues ingles
-            'en-pt': 'Inglês → Português',
-            'pt-en': 'Português → Inglês'
-        };
-
-        // Estados globais
-        let playerStats = {/* estatísticas do jogador */
-            totalScore: 0,
-            gamesPlayed: 0,
-            questionsAnswered: 0,
-            correctAnswers: 0,
-            streak: 0,
-            maxStreak: 0,
-            scoreHistory: [],
-            // Novos campos para níveis
-            level: 1,
-            currentXP: 0,
-            totalXP: 0,
-            titles: [],
-            currentTitle: null
-        };
-        let gameState = {/* estado atual do jogo */
-            availableQuestions: [],
-            currentQuestion: null,
-            selectedWords: [],
-            score: 0,
-            totalQuestions: 0,
-            currentQuestionNum: 0,
-            gameActive: false,
-            // Novos campos para score avançado
-            currentStreak: 0,
-            roundStartTime: null,
-            roundScore: 0
-        };
-        let editingId = null;
-
-        // IndexedDB functions, Configurações do IndexedDB
-        const DB_NAME = 'EnglishLearningGame';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'phrases';
-
-        let db;
-
-        // ==========================================
-        // 2. FUNÇÕES DE INICIALIZAÇÃO
-        // ==========================================
-        // Inicializar banco de dados
-        async function initDB() {/* inicializa IndexedDB */
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-
-                request.onupgradeneeded = (event) => {
-                    db = event.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                        store.createIndex('category', 'category', { unique: false });
-                        store.createIndex('difficulty', 'difficulty', { unique: false });
-                    }
-                };
-            });
-        }
-        // Carregar estatísticas salvas
-        function loadPlayerStats() {/* carrega stats do localStorage */
-            try {
-                const saved = localStorage.getItem('playerStats');
-                if (saved) {
-                    playerStats = { ...playerStats, ...JSON.parse(saved) };
-                }
-            } catch (error) {
-                console.error('Erro ao carregar estatísticas:', error);
-            }
-        }
-        // Inicializar dropdowns de seleção  
-        function initializeDropdowns() {/* preenche selects de categoria/dificuldade */
-            const categorySelect = document.getElementById('categorySelect');
-            const difficultySelect = document.getElementById('difficultySelect');
-            const categorySelect2 = document.getElementById('categorySelect2');
-            const difficultySelect2 = document.getElementById('difficultySelect2');
-
-            // Preencher categorias
-            Object.keys(CATEGORIES).forEach(key => {
-                const option1 = new Option(CATEGORIES[key], key);
-                const option2 = new Option(CATEGORIES[key], key);
-                categorySelect.add(option1);
-                categorySelect2.add(option2);
-            });
-
-            // Preencher dificuldades
-            DIFFICULTIES.forEach(difficulty => {
-                const option1 = new Option(difficulty.charAt(0).toUpperCase() + difficulty.slice(1), difficulty);
-                const option2 = new Option(difficulty.charAt(0).toUpperCase() + difficulty.slice(1), difficulty);
-                difficultySelect.add(option1);
-                difficultySelect2.add(option2);
-            });
-            // Preencher tipos de jogo
-            const gameTypeSelect = document.getElementById('gameTypeSelect');
-            Object.keys(GAME_TYPES).forEach(key => {
-                const option = new Option(GAME_TYPES[key], key);
-                gameTypeSelect.add(option);
-            });
-            // Preencher direções de pergunta
-            const questionDirectionSelect = document.getElementById('questionDirection');
-            Object.keys(QUESTION_DIRECTIONS).forEach(key => {
-                const option = new Option(QUESTION_DIRECTIONS[key], key);
-                questionDirectionSelect.add(option);
-            });
-        }
-        // Função principal de inicialização
-        async function init() {/* inicializa toda a aplicação */
-            try {
-                await initDB();
-                await mergePhrases(); // Usar mergePhrases em vez de loadPhrases
-                loadPlayerStats(); // ✅ CORRETO
-                initializeDropdowns();
-                loadPhrasesList();
-                updateGameStatus();
-                document.getElementById('gameTypeSelect').addEventListener('change', toggleCustomOptions);
-                console.log(`${phrases.length} frases carregadas`);
-            } catch (error) {
-                console.error('Erro ao inicializar:', error);
-                // Fallback para dados em memória se IndexedDB falhar
-                initializeDropdowns();
-                loadPhrasesList();
-                updateGameStatus();
-            }
-        }
-        // ==========================================
-        // 3. FUNÇÕES DE GERENCIAMENTO DE DADOS
-        // ==========================================
-        // Salvar frases no IndexedDB
-        async function savePhrases() {/* salva frases no banco */
-            const transaction = db.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-
-            // Clear existing data
-            await store.clear();
-
-            // Add all phrases
-            for (const phrase of phrases) {
-                await store.add(phrase);
-            }
-        }
-        // Carregar frases do IndexedDB
-        async function loadPhrases() {/* carrega frases do banco */
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.getAll();
-
-            return new Promise((resolve, reject) => {
-                request.onsuccess = () => {
-                    const dbPhrases = request.result;
-
-                    // Se não há frases no IndexedDB, usar as frases do script
-                    if (dbPhrases.length === 0 && phrases.length > 0) {
-                        // Salvar as frases iniciais no IndexedDB
-                        savePhrases().then(() => {
-                            console.log('Frases iniciais salvas no IndexedDB');
-                            resolve(phrases);
-                        });
-                    } else {
-                        // Usar as frases do IndexedDB
-                        phrases = dbPhrases;
-                        resolve(phrases);
-                    }
-                };
-                request.onerror = () => reject(request.error);
-            });
-        }
-        // Mesclar frases (script + banco)
-        async function mergePhrases() {/* combina frases do script com banco */
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.getAll();
-
-            return new Promise((resolve, reject) => {
-                request.onsuccess = async () => {
-                    const dbPhrases = request.result;
-
-                    if (dbPhrases.length === 0) {
-                        // Se IndexedDB está vazio, usar frases do script
-                        console.log('IndexedDB vazio, usando frases do script');
-                        await savePhrases();
-                        resolve(phrases);
-                    } else {
-                        // Se IndexedDB tem dados, verificar se há frases novas no script
-                        const dbIds = new Set(dbPhrases.map(p => p.id));
-                        const newPhrases = phrases.filter(p => !dbIds.has(p.id));
-
-                        if (newPhrases.length > 0) {
-                            console.log(`Encontradas ${newPhrases.length} novas frases no script`);
-                            // Mesclar frases novas
-                            phrases = [...dbPhrases, ...newPhrases];
-                            await savePhrases();
-                        } else {
-                            // Use apenas as frases do IndexedDB
-                            phrases = dbPhrases;
-                        }
-                        resolve(phrases);
-                    }
-                };
-                request.onerror = () => reject(request.error);
-            });
-        }
-        // Salvar estatísticas
-        function savePlayerStats() {/* salva stats no localStorage */
-            try {
-                localStorage.setItem('playerStats', JSON.stringify(playerStats));
-            } catch (error) {
-                console.error('Erro ao salvar estatísticas:', error);
-            }
-        }
-        // ==========================================
-        // 4. SISTEMA DE PONTUAÇÃO E NÍVEIS
-        // ==========================================
-        // Calcular XP necessário para nível
-        function getXPForLevel(level) {/* calcula XP por nível */
-            if (level <= 1) return 0;
-            return Math.floor(LEVEL_SYSTEM.baseXP * Math.pow(LEVEL_SYSTEM.multiplier, level - 2));
-        }
-        // XP necessário para próximo nível
-        function getXPNeededForNextLevel(currentLevel) {/* XP para subir */
-            return getXPForLevel(currentLevel + 1);
-        }
-        // XP total acumulado até nível
-        function getTotalXPForLevel(level) {/* XP total do nível */
-            let total = 0;
-            for (let i = 1; i <= level; i++) {
-                total += getXPForLevel(i);
-            }
-            return total;
-        }
-        // Adicionar XP ao jogador
-        function addXP(amount) {/* adiciona XP e verifica level up */
-            const oldLevel = playerStats.level;
-            playerStats.currentXP += amount;
-            playerStats.totalXP += amount;
-
-            // Verificar se subiu de nível
-            const xpNeeded = getXPNeededForNextLevel(playerStats.level);
-            if (playerStats.currentXP >= xpNeeded && playerStats.level < LEVEL_SYSTEM.maxLevel) {
-                levelUp(oldLevel);
-            }
-
-            savePlayerStats();
-            return playerStats.level > oldLevel;
-        }
-        // Subir de nível
-        function levelUp(oldLevel) {/* processo de subir nível */
-            playerStats.currentXP -= getXPNeededForNextLevel(oldLevel);
-            playerStats.level++;
-
-            // Verificar recompensas
-            const reward = LEVEL_SYSTEM.rewards[playerStats.level];
-            if (reward) {
-                processLevelReward(reward, playerStats.level);
-            }
-
-            showLevelUpAnimation(oldLevel, playerStats.level);
-        }
-        // Processar recompensas de nível
-        function processLevelReward(reward, level) {/* aplica recompensas */
-            switch (reward.type) {
-                case 'bonus':
-                    playerStats.totalScore += reward.value;
-                    break;
-                case 'title':
-                    if (!playerStats.titles.includes(reward.value)) {
-                        playerStats.titles.push(reward.value);
-                        if (!playerStats.currentTitle) {
-                            playerStats.currentTitle = reward.value;
-                        }
-                    }
-                    break;
-                case 'unlock':
-                    // Funcionalidades desbloqueadas serão tratadas na UI
-                    break;
-            }
-        }
-        // Animação de level up
-        function showLevelUpAnimation(oldLevel, newLevel) {/* mostra animação */
-            const levelUpDiv = document.createElement('div');
-            levelUpDiv.className = 'level-up-animation';
-            levelUpDiv.innerHTML = `
-        <div class="level-up-content">
-            <h2>🎉 LEVEL UP! 🎉</h2>
-            <div class="level-change">
-                <span class="old-level">${oldLevel}</span>
-                <span class="arrow">→</span>
-                <span class="new-level">${newLevel}</span>
-            </div>
-            <p>Parabéns! Você alcançou o nível ${newLevel}!</p>
-            ${LEVEL_SYSTEM.rewards[newLevel] ? `<p class="reward">${LEVEL_SYSTEM.rewards[newLevel].message}</p>` : ''}
+        <div id="type-answer-wrap" class="type-answer-wrap hidden">
+          <input type="text" id="type-answer-input" placeholder="Digite a resposta..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <div id="type-feedback" class="type-feedback hidden"></div>
         </div>
+
+        <button class="btn btn-secondary btn-block" id="btn-reveal">Mostrar resposta</button>
+        <button class="btn btn-primary btn-block hidden" id="btn-check-typed">Verificar</button>
+
+        <div class="rate-row hidden" id="rate-row">
+          <button class="rate-btn again" data-rating="1">De novo<span class="interval" id="int-again"></span></button>
+          <button class="rate-btn hard" data-rating="2">Difícil<span class="interval" id="int-hard"></span></button>
+          <button class="rate-btn good" data-rating="3">Bom<span class="interval" id="int-good"></span></button>
+          <button class="rate-btn easy" data-rating="4">Fácil<span class="interval" id="int-easy"></span></button>
+        </div>
+      </div>
+
+      <div id="review-empty" class="empty-state hidden">
+        <div class="icon">✅</div>
+        <div class="title">Nada para revisar agora</div>
+        <p>Você está em dia! Volte mais tarde ou adicione novas palavras na Biblioteca.</p>
+      </div>
+
+      <div id="review-done" class="session-done hidden">
+        <div class="big">🎉</div>
+        <h2>Sessão concluída</h2>
+        <p id="review-done-sub">Você revisou algumas palavras.</p>
+        <button class="btn btn-secondary" id="btn-review-done-home">Voltar ao início</button>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="view" id="view-library">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar palavra...">
+      </div>
+      <div class="chip-row" id="filter-chips"></div>
+      <ul class="word-list" id="word-list"></ul>
+      <div id="library-empty" class="empty-state hidden">
+        <div class="icon">🔎</div>
+        <div class="title">Nenhuma palavra encontrada</div>
+        <p>Tente outra busca ou toque no botão + para adicionar uma nova palavra.</p>
+      </div>
+    </section>
+    <button class="fab" id="fab-add-word">+</button>
+
+    <!-- CATEGORIES -->
+    <section class="view" id="view-categories">
+      <div class="section-title">Suas categorias</div>
+      <ul class="word-list" id="category-list"></ul>
+      <button class="btn btn-secondary btn-block" id="btn-add-category" style="margin-top:16px;">+ Nova categoria</button>
+      <div id="categories-empty" class="empty-state hidden">
+        <div class="icon">🗂️</div>
+        <div class="title">Nenhuma categoria ainda</div>
+        <p>Crie categorias para organizar seu vocabulário por tema.</p>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="section-title">Prática</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="lbl">Direção</div><div class="desc">Qual idioma aparece primeiro no cartão</div></div>
+          <div class="seg-control" id="seg-direction">
+            <span class="seg-opt" data-val="mixed">Misto</span>
+            <span class="seg-opt" data-val="en-pt">EN→PT</span>
+            <span class="seg-opt" data-val="pt-en">PT→EN</span>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Modo de resposta</div><div class="desc">Digitar exige recordação ativa — mais rigoroso e eficaz</div></div>
+          <div class="seg-control" id="seg-input-mode">
+            <span class="seg-opt" data-val="typing">Digitar</span>
+            <span class="seg-opt" data-val="flip">Virar</span>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Tamanho da sessão</div><div class="desc">Cartões por sessão de revisão</div></div>
+          <select class="native-select" id="select-session-size">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="9999">Tudo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">Biblioteca</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="lbl">Exportar</div><div class="desc">Salvar suas palavras em um arquivo .json</div></div>
+          <select class="native-select" id="select-export-category"></select>
+        </div>
+        <div class="settings-row">
+          <button class="btn btn-secondary btn-sm" id="btn-export" style="width:100%;">Exportar categoria</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Importar</div><div class="desc">Carregar um arquivo .json exportado</div></div>
+        </div>
+        <div class="settings-row">
+          <label class="btn btn-secondary btn-sm" style="width:100%;text-align:center;" for="import-file-input">Escolher arquivo</label>
+          <input type="file" id="import-file-input" accept="application/json,.json" class="hidden">
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Pacote inicial</div><div class="desc">40+ palavras essenciais e falsos cognatos</div></div>
+        </div>
+        <div class="settings-row">
+          <button class="btn btn-secondary btn-sm" id="btn-import-starter" style="width:100%;">Importar pacote inicial</button>
+        </div>
+      </div>
+
+      <div class="section-title">Zona de risco</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div><div class="lbl">Zerar progresso</div><div class="desc">Mantém as palavras, reinicia o SRS de todas</div></div>
+        </div>
+        <div class="settings-row">
+          <button class="btn btn-danger btn-sm" id="btn-reset-progress" style="width:100%;">Zerar progresso</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Apagar tudo</div><div class="desc">Remove todas as palavras e categorias</div></div>
+        </div>
+        <div class="settings-row">
+          <button class="btn btn-danger btn-sm" id="btn-delete-all" style="width:100%;">Apagar tudo</button>
+        </div>
+      </div>
+
+      <div class="info-block">
+        <h4>Como isso funciona, sem enrolação</h4>
+        <p><strong>Repetição espaçada:</strong> cada palavra volta a aparecer pouco antes de você esquecê-la. Isso fixa o vocabulário na memória de longo prazo — não é sorte, é o algoritmo SM-2, o mesmo usado por ferramentas sérias de estudo.</p>
+        <p style="margin-top:8px;"><strong>Recordação ativa:</strong> digitar a resposta é mais difícil que apenas reconhecer — de propósito. Reconhecer uma palavra numa lista te engana e passa a sensação de que você já sabe. Produzir a resposta do zero é o que realmente comprova (e constrói) memória.</p>
+        <p style="margin-top:8px;">Seja honesto ao avaliar os cartões no modo "Virar". Marcar tudo como "Fácil" só atrasa palavras que você ainda não sabe — e não engana ninguém além de você mesmo.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-view="home">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+      Início
+    </button>
+    <button class="nav-btn" data-view="review">
+      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 2v6M16 2v6"/></svg>
+      Revisar
+      <span class="dot" id="nav-dot-review"></span>
+    </button>
+    <button class="nav-btn" data-view="library">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Biblioteca
+    </button>
+    <button class="nav-btn" data-view="categories">
+      <svg viewBox="0 0 24 24"><path d="M3 7l3-4h5l2 3h8v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+      Categorias
+    </button>
+    <button class="nav-btn" data-view="settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </nav>
+</div>
+
+<!-- WORD MODAL -->
+<div class="overlay" id="overlay-word">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="word-modal-title">Nova palavra</div>
+    <input type="hidden" id="word-id-input">
+    <div class="field">
+      <label>Inglês *</label>
+      <input type="text" id="word-english-input" placeholder="ex.: actually" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Português *</label>
+      <input type="text" id="word-portuguese-input" placeholder="ex.: na verdade" autocomplete="off">
+      <div class="field-hint">Use "/" para mais de uma resposta aceitável, ex.: "na verdade / de fato"</div>
+    </div>
+    <div class="field">
+      <label>Categoria</label>
+      <select class="native-select" id="word-category-input" style="width:100%;"></select>
+    </div>
+    <div class="field">
+      <label>Frase de exemplo (inglês)</label>
+      <textarea id="word-example-input" placeholder="ex.: Actually, I don't agree."></textarea>
+    </div>
+    <div class="field">
+      <label>Tradução do exemplo</label>
+      <textarea id="word-example-tr-input" placeholder="ex.: Na verdade, eu não concordo."></textarea>
+    </div>
+    <div class="field">
+      <label>Notas (opcional)</label>
+      <textarea id="word-notes-input" placeholder="dicas, pegadinhas, pronúncia..."></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-danger hidden" id="btn-delete-word">Excluir</button>
+      <button class="btn btn-secondary" id="btn-cancel-word">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save-word">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="overlay" id="overlay-category">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="category-modal-title">Nova categoria</div>
+    <input type="hidden" id="category-id-input">
+    <div class="field">
+      <label>Nome *</label>
+      <input type="text" id="category-name-input" placeholder="ex.: Phrasal Verbs" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Cor</label>
+      <div class="swatch-picker" id="category-swatch-picker"></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-danger hidden" id="btn-delete-category">Excluir</button>
+      <button class="btn btn-secondary" id="btn-cancel-category">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save-category">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="overlay-confirm">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="confirm-title">Tem certeza?</div>
+    <p id="confirm-body" style="color:var(--text-muted);font-size:14px;line-height:1.5;"></p>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" id="btn-confirm-cancel">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ==========================================================================
+   AprendeInglês — vocabulário + repetição espaçada (SM-2 + learning steps)
+   Tudo em IndexedDB. Sem backend, sem contas, sem ilusões.
+   ========================================================================== */
+
+/* ---------------- Constants ---------------- */
+const DB_NAME = 'aprende_ingles_db';
+const DB_VERSION = 1;
+const STORE_WORDS = 'words';
+const STORE_CATS = 'categories';
+const STORE_META = 'meta';
+
+const LEARNING_STEPS_MIN = [10, 1440]; // 10 min, then 1 dia -> graduate
+const RELEARN_STEPS_MIN = [10];        // ao errar um cartão em revisão
+const GRADUATE_INTERVAL_DAYS = 1;
+const EASY_INTERVAL_DAYS = 4;
+const MIN_EASE = 1.3;
+const DEFAULT_EASE = 2.5;
+
+const CATEGORY_COLORS = ['#E8B84B','#4FBFA8','#5B9FE8','#E8935A','#E2645A','#B98FE0','#7FD1E0','#D9C46A'];
+
+const RATING = { AGAIN: 1, HARD: 2, GOOD: 3, EASY: 4 };
+
+/* ---------------- IndexedDB layer ---------------- */
+let dbInstance = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (dbInstance) return resolve(dbInstance);
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_WORDS)) {
+        const ws = db.createObjectStore(STORE_WORDS, { keyPath: 'id', autoIncrement: true });
+        ws.createIndex('categoryId', 'categoryId', { unique: false });
+        ws.createIndex('dueDate', 'dueDate', { unique: false });
+        ws.createIndex('status', 'status', { unique: false });
+      }
+      if (!db.objectStoreNames.contains(STORE_CATS)) {
+        db.createObjectStore(STORE_CATS, { keyPath: 'id', autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains(STORE_META)) {
+        db.createObjectStore(STORE_META, { keyPath: 'key' });
+      }
+    };
+    req.onsuccess = (e) => { dbInstance = e.target.result; resolve(dbInstance); };
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+function tx(storeNames, mode = 'readonly') {
+  return openDB().then(db => db.transaction(storeNames, mode));
+}
+
+function reqToPromise(req) {
+  return new Promise((resolve, reject) => {
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+/* ---- Categories ---- */
+async function dbAddCategory(cat) {
+  const t = await tx([STORE_CATS], 'readwrite');
+  const id = await reqToPromise(t.objectStore(STORE_CATS).add(cat));
+  return id;
+}
+async function dbUpdateCategory(cat) {
+  const t = await tx([STORE_CATS], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_CATS).put(cat));
+}
+async function dbDeleteCategory(id) {
+  const t = await tx([STORE_CATS], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_CATS).delete(id));
+}
+async function dbGetAllCategories() {
+  const t = await tx([STORE_CATS]);
+  const all = await reqToPromise(t.objectStore(STORE_CATS).getAll());
+  return all.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+}
+
+/* ---- Words ---- */
+async function dbAddWord(word) {
+  const t = await tx([STORE_WORDS], 'readwrite');
+  const id = await reqToPromise(t.objectStore(STORE_WORDS).add(word));
+  return id;
+}
+async function dbUpdateWord(word) {
+  const t = await tx([STORE_WORDS], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_WORDS).put(word));
+}
+async function dbDeleteWord(id) {
+  const t = await tx([STORE_WORDS], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_WORDS).delete(id));
+}
+async function dbGetAllWords() {
+  const t = await tx([STORE_WORDS]);
+  return await reqToPromise(t.objectStore(STORE_WORDS).getAll());
+}
+async function dbGetWord(id) {
+  const t = await tx([STORE_WORDS]);
+  return await reqToPromise(t.objectStore(STORE_WORDS).get(id));
+}
+async function dbReassignCategoryWords(categoryId, newCategoryId) {
+  const all = await dbGetAllWords();
+  const t = await tx([STORE_WORDS], 'readwrite');
+  const store = t.objectStore(STORE_WORDS);
+  for (const w of all) {
+    if (w.categoryId === categoryId) {
+      w.categoryId = newCategoryId;
+      store.put(w);
+    }
+  }
+}
+async function dbClearAll() {
+  const t = await tx([STORE_WORDS, STORE_CATS], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_WORDS).clear());
+  await reqToPromise(t.objectStore(STORE_CATS).clear());
+}
+
+/* ---- Meta (settings, streak, review log) ---- */
+async function dbGetMeta(key, fallback) {
+  const t = await tx([STORE_META]);
+  const r = await reqToPromise(t.objectStore(STORE_META).get(key));
+  return r ? r.value : fallback;
+}
+async function dbSetMeta(key, value) {
+  const t = await tx([STORE_META], 'readwrite');
+  await reqToPromise(t.objectStore(STORE_META).put({ key, value }));
+}
+
+/* ---------------- Date helpers ---------------- */
+function nowISO() { return new Date().toISOString(); }
+function addMinutes(date, min) { return new Date(date.getTime() + min * 60000); }
+function addDays(date, days) { return new Date(date.getTime() + days * 86400000); }
+function dayKey(d) {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+}
+function isSameDay(a, b) { return dayKey(a) === dayKey(b); }
+
+function formatIntervalShort(minutes) {
+  if (minutes < 60) return `${Math.round(minutes)}min`;
+  if (minutes < 1440) return `${Math.round(minutes / 60)}h`;
+  const days = minutes / 1440;
+  if (days < 30) return `${Math.round(days)}d`;
+  if (days < 365) return `${Math.round(days / 30)}m`;
+  return `${(days / 365).toFixed(1)}a`;
+}
+
+function formatDueRelative(dueISO) {
+  const due = new Date(dueISO);
+  const now = new Date();
+  const diffMs = due - now;
+  if (diffMs <= 0) {
+    if (isSameDay(due, now)) return 'hoje';
+    return 'atrasado';
+  }
+  const diffMin = diffMs / 60000;
+  if (diffMin < 60) return `em ${Math.round(diffMin)}min`;
+  if (diffMin < 1440) return `em ${Math.round(diffMin / 60)}h`;
+  const days = Math.round(diffMin / 1440);
+  if (days === 1) return 'amanhã';
+  if (days < 30) return `em ${days}d`;
+  return `em ${Math.round(days / 30)}m`;
+}
+
+/* ---------------- SRS engine (SM-2 + learning steps, à la Anki) ----------------
+   word.status: 'new' | 'learning' | 'review'
+   word.learningStep: índice no array de passos de aprendizagem
+   word.interval: dias (usado quando status === 'review')
+   word.easeFactor, word.repetitions, word.lapses
+   word.dueDate: ISO string
+------------------------------------------------------------------------------- */
+
+function previewIntervals(word) {
+  // Retorna, para cada rating, uma string de preview do próximo intervalo (sem mutar o word)
+  const clone = JSON.parse(JSON.stringify(word));
+  const out = {};
+  for (const key of ['AGAIN', 'HARD', 'GOOD', 'EASY']) {
+    const w = JSON.parse(JSON.stringify(clone));
+    scheduleReview(w, RATING[key], new Date());
+    const diffMin = (new Date(w.dueDate) - new Date()) / 60000;
+    out[key] = formatIntervalShort(diffMin);
+  }
+  return out;
+}
+
+function scheduleReview(word, rating, now = new Date()) {
+  if (word.status === 'new' || word.status === 'learning') {
+    scheduleLearningCard(word, rating, now);
+  } else {
+    scheduleReviewCard(word, rating, now);
+  }
+  word.lastReviewed = now.toISOString();
+  word.reviewsCount = (word.reviewsCount || 0) + 1;
+  return word;
+}
+
+function scheduleLearningCard(word, rating, now) {
+  if (rating === RATING.AGAIN) {
+    word.status = 'learning';
+    word.learningStep = 0;
+    word.dueDate = addMinutes(now, LEARNING_STEPS_MIN[0]).toISOString();
+    return;
+  }
+  if (rating === RATING.HARD) {
+    word.status = 'learning';
+    const step = LEARNING_STEPS_MIN[word.learningStep] ?? LEARNING_STEPS_MIN[0];
+    word.dueDate = addMinutes(now, step).toISOString();
+    return;
+  }
+  if (rating === RATING.EASY) {
+    graduateCard(word, EASY_INTERVAL_DAYS, now);
+    return;
+  }
+  // GOOD
+  const nextStep = (word.learningStep ?? -1) + 1;
+  if (nextStep >= LEARNING_STEPS_MIN.length) {
+    graduateCard(word, GRADUATE_INTERVAL_DAYS, now);
+  } else {
+    word.status = 'learning';
+    word.learningStep = nextStep;
+    word.dueDate = addMinutes(now, LEARNING_STEPS_MIN[nextStep]).toISOString();
+  }
+}
+
+function graduateCard(word, intervalDays, now) {
+  word.status = 'review';
+  word.learningStep = 0;
+  word.interval = intervalDays;
+  word.repetitions = (word.repetitions || 0) + 1;
+  if (!word.easeFactor) word.easeFactor = DEFAULT_EASE;
+  word.dueDate = addDays(now, intervalDays).toISOString();
+}
+
+function scheduleReviewCard(word, rating, now) {
+  word.easeFactor = word.easeFactor || DEFAULT_EASE;
+  word.interval = word.interval || 1;
+
+  if (rating === RATING.AGAIN) {
+    word.lapses = (word.lapses || 0) + 1;
+    word.easeFactor = Math.max(MIN_EASE, word.easeFactor - 0.2);
+    word.status = 'learning';
+    word.learningStep = 0;
+    word.repetitions = 0;
+    word.dueDate = addMinutes(now, RELEARN_STEPS_MIN[0]).toISOString();
+    return;
+  }
+  if (rating === RATING.HARD) {
+    word.easeFactor = Math.max(MIN_EASE, word.easeFactor - 0.15);
+    word.interval = Math.max(word.interval + 1, word.interval * 1.2);
+    word.dueDate = addDays(now, word.interval).toISOString();
+    word.repetitions = (word.repetitions || 0) + 1;
+    return;
+  }
+  if (rating === RATING.GOOD) {
+    word.interval = word.interval * word.easeFactor;
+    word.dueDate = addDays(now, word.interval).toISOString();
+    word.repetitions = (word.repetitions || 0) + 1;
+    return;
+  }
+  // EASY
+  word.easeFactor = word.easeFactor + 0.15;
+  word.interval = word.interval * word.easeFactor * 1.3;
+  word.dueDate = addDays(now, word.interval).toISOString();
+  word.repetitions = (word.repetitions || 0) + 1;
+}
+
+function makeNewWordSRSFields() {
+  return {
+    status: 'new',
+    learningStep: 0,
+    interval: 0,
+    easeFactor: DEFAULT_EASE,
+    repetitions: 0,
+    lapses: 0,
+    reviewsCount: 0,
+    lastReviewed: null,
+    dueDate: nowISO(),
+  };
+}
+
+/* ---------------- Text matching (modo digitar) ---------------- */
+function normalizeAnswer(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .replace(/[.,!?;:"'()]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function acceptableAnswers(field) {
+  return (field || '').split('/').map(s => normalizeAnswer(s)).filter(Boolean);
+}
+function checkTypedAnswer(userInput, correctField) {
+  const norm = normalizeAnswer(userInput);
+  if (!norm) return false;
+  return acceptableAnswers(correctField).includes(norm);
+}
+
+/* ---------------- Starter pack ---------------- */
+const STARTER_PACK = {
+  categories: [
+    { name: 'Falsos Cognatos', color: '#E2645A' },
+    { name: 'Verbos Essenciais', color: '#5B9FE8' },
+    { name: 'Phrasal Verbs', color: '#4FBFA8' },
+    { name: 'Frases do Dia a Dia', color: '#E8935A' },
+  ],
+  words: [
+    // Falsos Cognatos
+    ['Falsos Cognatos','actually','na verdade','Actually, I disagree with you.','Na verdade, eu discordo de você.','Não é "atualmente" (esse é "currently").'],
+    ['Falsos Cognatos','pretend','fingir','She pretended to be asleep.','Ela fingiu estar dormindo.','Não é "pretender" (esse é "to intend/to plan").'],
+    ['Falsos Cognatos','push','empurrar','Push the door to open it.','Empurre a porta para abri-la.','Cuidado: "pull" é "puxar".'],
+    ['Falsos Cognatos','pull','puxar','Pull the handle towards you.','Puxe a alça em sua direção.','O oposto de "push".'],
+    ['Falsos Cognatos','library','biblioteca','I borrowed this book from the library.','Peguei este livro emprestado na biblioteca.','Não é "livraria" (esse é "bookstore").'],
+    ['Falsos Cognatos','realize','perceber / dar-se conta','I realized I forgot my keys.','Eu percebi que esqueci minhas chaves.','Pode significar "realizar" também, mas o uso mais comum é "perceber".'],
+    ['Falsos Cognatos','parents','pais','My parents live in São Paulo.','Meus pais moram em São Paulo.','Não é "parentes" (esse é "relatives").'],
+    ['Falsos Cognatos','college','faculdade','She goes to college now.','Ela está na faculdade agora.','Não é "colégio" (ensino médio é "high school").'],
+    ['Falsos Cognatos','fabric','tecido','This dress is made of soft fabric.','Esse vestido é feito de tecido macio.','Não é "fábrica" (esse é "factory").'],
+    ['Falsos Cognatos','costume','fantasia','He wore a pirate costume.','Ele usou uma fantasia de pirata.','Não é "costume" (esse é "habit / custom").'],
+    ['Falsos Cognatos','sensible','sensato','That was a sensible decision.','Foi uma decisão sensata.','Não é "sensível" (esse é "sensitive").'],
+    ['Falsos Cognatos','attend','comparecer / assistir a','I will attend the meeting.','Eu vou comparecer à reunião.','Não é "atender" (esse é "to answer / to serve").'],
+    ['Falsos Cognatos','exquisite','requintado','It was an exquisite meal.','Foi uma refeição requintada.','Não é "esquisito" (esse é "weird / strange").'],
+    ['Falsos Cognatos','eventually','finalmente / no final das contas','He eventually agreed.','No final das contas, ele concordou.','Não é "eventualmente" no sentido de "às vezes".'],
+    // Verbos Essenciais
+    ['Verbos Essenciais','get','conseguir / obter / ficar','Can you get me a glass of water?','Você pode me trazer um copo de água?','Um dos verbos mais versáteis do inglês.'],
+    ['Verbos Essenciais','make','fazer (produzir/criar)','She made a cake for the party.','Ela fez um bolo para a festa.','Compare com "do" (fazer uma atividade/tarefa).'],
+    ['Verbos Essenciais','take','pegar / levar','Take an umbrella, it might rain.','Leve um guarda-chuva, pode chover.',''],
+    ['Verbos Essenciais','give','dar','Give me a minute, please.','Me dê um minuto, por favor.',''],
+    ['Verbos Essenciais','put','colocar','Put the keys on the table.','Coloque as chaves na mesa.',''],
+    ['Verbos Essenciais','come','vir','Come here for a second.','Venha aqui por um segundo.',''],
+    ['Verbos Essenciais','want','querer','I want to learn English.','Eu quero aprender inglês.',''],
+    ['Verbos Essenciais','need','precisar','We need more time.','Precisamos de mais tempo.',''],
+    ['Verbos Essenciais','know','saber / conhecer','I don\'t know the answer.','Eu não sei a resposta.',''],
+    ['Verbos Essenciais','think','pensar / achar','I think it will work.','Eu acho que vai dar certo.',''],
+    ['Verbos Essenciais','feel','sentir','I feel tired today.','Eu me sinto cansado hoje.',''],
+    ['Verbos Essenciais','look','olhar / parecer','Look at that view!','Olhe para essa vista!',''],
+    ['Verbos Essenciais','find','encontrar','I can\'t find my phone.','Eu não consigo encontrar meu celular.',''],
+    ['Verbos Essenciais','tell','contar / dizer','Tell me what happened.','Me conte o que aconteceu.','Compare com "say" (não leva a pessoa direto: say something to someone).'],
+    ['Verbos Essenciais','leave','sair / deixar','I have to leave now.','Eu preciso sair agora.',''],
+    // Phrasal Verbs
+    ['Phrasal Verbs','give up','desistir','Don\'t give up on your goals.','Não desista dos seus objetivos.',''],
+    ['Phrasal Verbs','look for','procurar','I\'m looking for my keys.','Estou procurando minhas chaves.',''],
+    ['Phrasal Verbs','find out','descobrir','I found out the truth.','Eu descobri a verdade.',''],
+    ['Phrasal Verbs','get up','levantar-se','I get up at 6am every day.','Eu me levanto às 6h todos os dias.',''],
+    ['Phrasal Verbs','turn on','ligar','Turn on the lights, please.','Ligue as luzes, por favor.',''],
+    ['Phrasal Verbs','turn off','desligar','Turn off the TV before bed.','Desligue a TV antes de dormir.',''],
+    ['Phrasal Verbs','break down','quebrar / parar de funcionar','My car broke down yesterday.','Meu carro quebrou ontem.',''],
+    ['Phrasal Verbs','come back','voltar','I\'ll come back later.','Eu vou voltar mais tarde.',''],
+    ['Phrasal Verbs','put off','adiar','We had to put off the trip.','Tivemos que adiar a viagem.',''],
+    ['Phrasal Verbs','run out of','ficar sem','We ran out of coffee.','Ficamos sem café.',''],
+    ['Phrasal Verbs','work out','se resolver / malhar','Everything will work out fine.','Tudo vai se resolver bem.','Também significa "se exercitar/malhar".'],
+    ['Phrasal Verbs','deal with','lidar com','I need to deal with this problem.','Eu preciso lidar com esse problema.',''],
+    ['Phrasal Verbs','figure out','entender / descobrir como','Let me figure out a solution.','Deixa eu descobrir uma solução.',''],
+    ['Phrasal Verbs','pick up','pegar / buscar','I\'ll pick you up at 8.','Vou te buscar às 8.',''],
+    // Frases do Dia a Dia
+    ['Frases do Dia a Dia','How is it going?','Como vai?','Hey! How is it going?','Ei! Como vai?',''],
+    ['Frases do Dia a Dia','I have no idea','Eu não faço ideia','I have no idea what happened.','Eu não faço ideia do que aconteceu.',''],
+    ['Frases do Dia a Dia','Can you help me?','Você pode me ajudar?','Excuse me, can you help me?','Com licença, você pode me ajudar?',''],
+    ['Frases do Dia a Dia','It depends','Depende','It depends on the weather.','Depende do clima.',''],
+    ['Frases do Dia a Dia','by the way','a propósito','By the way, nice shirt.','A propósito, bela camisa.',''],
+    ['Frases do Dia a Dia','I\'m in a hurry','Estou com pressa','Sorry, I\'m in a hurry.','Desculpa, estou com pressa.',''],
+    ['Frases do Dia a Dia','sounds good','parece bom / combinado','Meet at 6? Sounds good.','Encontrar às 6? Combinado.',''],
+    ['Frases do Dia a Dia','it makes sense','faz sentido','Yeah, that makes sense.','É, isso faz sentido.',''],
+  ]
+};
+
+/* ---------------- Global app state ---------------- */
+const state = {
+  currentView: 'home',
+  categories: [],
+  allWords: [],
+  settings: { direction: 'mixed', inputMode: 'typing', sessionSize: 20 },
+  session: null, // { queue:[], index:0, direction, results:{again,hard,good,easy}, startedAt }
+  libraryFilterCategory: 'all',
+  librarySearch: '',
+  editingWordId: null,
+  editingCategoryId: null,
+  confirmCallback: null,
+};
+
+/* ---------------- Utility / UI helpers ---------------- */
+function $(sel) { return document.querySelector(sel); }
+function $all(sel) { return Array.from(document.querySelectorAll(sel)); }
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+let toastTimer = null;
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function categoryById(id) {
+  return state.categories.find(c => c.id === id) || null;
+}
+function categoryName(id) {
+  const c = categoryById(id);
+  return c ? c.name : 'Sem categoria';
+}
+function categoryColor(id) {
+  const c = categoryById(id);
+  return c ? c.color : '#5B6072';
+}
+
+/* ---------------- View switching ---------------- */
+function switchView(name) {
+  state.currentView = name;
+  $all('.view').forEach(v => v.classList.remove('active'));
+  $('#view-' + name).classList.add('active');
+  $all('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  const fab = $('#fab-add-word');
+  fab.style.display = (name === 'library') ? 'flex' : 'none';
+  if (name === 'home') renderHome();
+  if (name === 'library') renderLibrary();
+  if (name === 'categories') renderCategories();
+  if (name === 'settings') renderSettings();
+  if (name === 'review' && !state.session) renderReviewEntry();
+  window.scrollTo(0, 0);
+}
+
+/* ---------------- Data reload ---------------- */
+async function reloadData() {
+  state.categories = await dbGetAllCategories();
+  state.allWords = await dbGetAllWords();
+}
+
+/* ---------------- Streak & review log ---------------- */
+async function getReviewLog() {
+  return await dbGetMeta('reviewLog', {});
+}
+async function logReviewToday() {
+  const log = await getReviewLog();
+  const key = dayKey(new Date());
+  log[key] = (log[key] || 0) + 1;
+  await dbSetMeta('reviewLog', log);
+  await updateStreak();
+}
+async function updateStreak() {
+  const log = await getReviewLog();
+  let streak = 0;
+  let cursor = new Date();
+  // hoje conta se houver reviews; senão começamos a checar a partir de ontem
+  if (!log[dayKey(cursor)]) {
+    cursor = addDays(cursor, -1);
+  }
+  while (log[dayKey(cursor)]) {
+    streak++;
+    cursor = addDays(cursor, -1);
+  }
+  await dbSetMeta('streak', streak);
+  return streak;
+}
+
+/* ---------------- HOME VIEW ---------------- */
+function computeStats() {
+  const now = new Date();
+  let due = 0, isNew = 0, learning = 0, review = 0;
+  for (const w of state.allWords) {
+    if (w.status === 'new') isNew++;
+    else if (w.status === 'learning') learning++;
+    else if (w.status === 'review') review++;
+    if (new Date(w.dueDate) <= now) due++;
+  }
+  return { due, isNew, learning, review, total: state.allWords.length };
+}
+
+async function renderHome() {
+  await reloadData();
+  const stats = computeStats();
+  $('#due-count').textContent = stats.due;
+  $('#due-sub').textContent = stats.due === 1 ? 'cartão esperando por você' : 'cartões esperando por você';
+  $('#stat-new').textContent = stats.isNew;
+  $('#stat-learning').textContent = stats.learning;
+  $('#stat-review').textContent = stats.review;
+  $('#btn-start-review').disabled = stats.due === 0;
+
+  const streak = await dbGetMeta('streak', 0);
+  $('#streak-count').textContent = streak;
+  $('#streak-badge').classList.toggle('is-zero', streak === 0);
+
+  const navDot = $('#nav-dot-review');
+  navDot.classList.toggle('show', stats.due > 0);
+
+  $('#home-empty').classList.toggle('hidden', stats.total > 0);
+  $('.hero-card').style.display = stats.total > 0 ? '' : 'none';
+  $('.stat-row').style.display = stats.total > 0 ? '' : 'none';
+
+  await renderWeekChart();
+}
+
+async function renderWeekChart() {
+  const log = await getReviewLog();
+  const wrap = $('#week-bars');
+  wrap.innerHTML = '';
+  const days = [];
+  for (let i = 6; i >= 0; i--) days.push(addDays(new Date(), -i));
+  const max = Math.max(1, ...days.map(d => log[dayKey(d)] || 0));
+  const dowLabels = ['D','S','T','Q','Q','S','S'];
+  days.forEach(d => {
+    const count = log[dayKey(d)] || 0;
+    const col = el('div', 'bar-col');
+    const bar = el('div', 'bar' + (count > 0 ? ' has-reviews' : '') + (isSameDay(d, new Date()) ? ' today' : ''));
+    const pct = Math.max(4, Math.round((count / max) * 100));
+    bar.style.height = pct + '%';
+    bar.title = `${count} revisões`;
+    const lbl = el('div', 'lbl', dowLabels[d.getDay()]);
+    col.appendChild(bar);
+    col.appendChild(lbl);
+    wrap.appendChild(col);
+  });
+}
+
+/* ---------------- REVIEW VIEW ---------------- */
+function renderReviewEntry() {
+  const stats = computeStats();
+  $('#review-session').classList.add('hidden');
+  $('#review-done').classList.add('hidden');
+  $('#review-empty').classList.toggle('hidden', stats.due > 0);
+  $('#review-session').classList.toggle('hidden', stats.due === 0);
+}
+
+function pickDirection() {
+  if (state.settings.direction === 'mixed') {
+    return Math.random() < 0.5 ? 'en-pt' : 'pt-en';
+  }
+  return state.settings.direction;
+}
+
+async function startReviewSession() {
+  await reloadData();
+  const now = new Date();
+  let due = state.allWords.filter(w => new Date(w.dueDate) <= now);
+  due.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  const size = state.settings.sessionSize;
+  if (due.length > size) due = due.slice(0, size);
+  if (due.length === 0) {
+    switchView('home');
+    showToast('Nada para revisar agora 🎉');
+    return;
+  }
+  state.session = {
+    queue: due.map(w => ({ wordId: w.id, direction: pickDirection() })),
+    index: 0,
+    total: due.length,
+    results: { again: 0, hard: 0, good: 0, easy: 0 },
+    revealed: false,
+  };
+  $('#review-session').classList.remove('hidden');
+  $('#review-empty').classList.add('hidden');
+  $('#review-done').classList.add('hidden');
+  renderCurrentCard();
+}
+
+function currentSessionWord() {
+  const item = state.session.queue[state.session.index];
+  if (!item) return null;
+  const word = state.allWords.find(w => w.id === item.wordId);
+  return { word, direction: item.direction };
+}
+
+function renderCurrentCard() {
+  const s = state.session;
+  if (!s) return;
+  if (s.index >= s.total) { finishSession(); return; }
+
+  const { word, direction } = currentSessionWord();
+  s.revealed = false;
+
+  $('#review-progress-label').textContent = `${s.index + 1}/${s.total}`;
+  $('#review-progress-fill').style.width = `${Math.round((s.index / s.total) * 100)}%`;
+
+  const card = $('#flashcard');
+  card.classList.remove('flipped');
+
+  const frontWord = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0].trim();
+  const backWord = direction === 'en-pt' ? word.portuguese.split('/')[0].trim() : word.english;
+  const dirLabel = direction === 'en-pt' ? 'inglês → português' : 'português → inglês';
+  const cardNo = 'Nº ' + String(word.id).padStart(4, '0');
+  const tag = categoryName(word.categoryId);
+
+  $('#card-no-front').textContent = cardNo;
+  $('#card-no-back').textContent = cardNo;
+  $('#card-tag-front').textContent = tag;
+  $('#card-tag-back').textContent = tag;
+  $('#card-dir-front').textContent = dirLabel;
+  $('#card-word-front').textContent = frontWord;
+  $('#card-word-back').textContent = frontWord;
+  $('#card-answer-back').textContent = backWord;
+
+  let exampleHtml = '';
+  if (word.example) {
+    exampleHtml = escapeHtml(word.example);
+    if (word.exampleTranslation) exampleHtml += `<span class="tr">${escapeHtml(word.exampleTranslation)}</span>`;
+  }
+  $('#card-example-back').innerHTML = exampleHtml;
+  $('#card-notes-back').textContent = word.notes || '';
+
+  const typing = state.settings.inputMode === 'typing';
+  $('#type-answer-wrap').classList.toggle('hidden', !typing);
+  $('#type-feedback').classList.add('hidden');
+  $('#type-answer-input').value = '';
+  $('#btn-reveal').classList.toggle('hidden', typing);
+  $('#btn-check-typed').classList.toggle('hidden', !typing);
+  $('#rate-row').classList.add('hidden');
+  $('#card-hint-front').textContent = typing ? 'digite a resposta abaixo' : 'toque para virar';
+
+  if (typing) setTimeout(() => $('#type-answer-input').focus(), 200);
+
+  // Preview de intervalos para os botões de rating
+  const previews = previewIntervals(word);
+  $('#int-again').textContent = previews.AGAIN;
+  $('#int-hard').textContent = previews.HARD;
+  $('#int-good').textContent = previews.GOOD;
+  $('#int-easy').textContent = previews.EASY;
+}
+
+function revealCard() {
+  if (state.session.revealed) return;
+  state.session.revealed = true;
+  $('#flashcard').classList.add('flipped');
+  $('#btn-reveal').classList.add('hidden');
+  $('#rate-row').classList.remove('hidden');
+}
+
+function checkTypedAnswerSubmit() {
+  if (state.session.revealed) return;
+  const { word, direction } = currentSessionWord();
+  const input = $('#type-answer-input').value;
+  const correctField = direction === 'en-pt' ? word.portuguese : word.english;
+  const isCorrect = checkTypedAnswer(input, correctField);
+
+  state.session.revealed = true;
+  state.session.lastTypedCorrect = isCorrect;
+  $('#flashcard').classList.add('flipped');
+  $('#btn-check-typed').classList.add('hidden');
+
+  const fb = $('#type-feedback');
+  fb.classList.remove('hidden', 'correct', 'incorrect');
+  fb.classList.add(isCorrect ? 'correct' : 'incorrect');
+  fb.textContent = isCorrect ? '✓ Correto!' : `✗ Resposta certa: ${direction === 'en-pt' ? word.portuguese : word.english}`;
+
+  $('#rate-row').classList.remove('hidden');
+  // sugestão de rating pré-selecionada visualmente não é necessária: usuário escolhe manualmente,
+  // mas destacamos a opção mais honesta.
+  $all('.rate-btn').forEach(b => b.classList.remove('suggested'));
+}
+
+async function submitRating(rating) {
+  const s = state.session;
+  if (!s || !s.revealed) return;
+  const { word } = currentSessionWord();
+  const fresh = await dbGetWord(word.id);
+  scheduleReview(fresh, rating, new Date());
+  await dbUpdateWord(fresh);
+  const idx = state.allWords.findIndex(w => w.id === fresh.id);
+  if (idx >= 0) state.allWords[idx] = fresh;
+
+  const key = rating === RATING.AGAIN ? 'again' : rating === RATING.HARD ? 'hard' : rating === RATING.GOOD ? 'good' : 'easy';
+  s.results[key]++;
+  await logReviewToday();
+
+  s.index++;
+  renderCurrentCard();
+}
+
+async function finishSession() {
+  const s = state.session;
+  $('#review-session').classList.add('hidden');
+  $('#review-done').classList.remove('hidden');
+  const total = s.total;
+  const streak = await dbGetMeta('streak', 0);
+  $('#review-done-sub').textContent = `${total} ${total === 1 ? 'cartão revisado' : 'cartões revisados'} · sequência de ${streak} ${streak === 1 ? 'dia' : 'dias'}`;
+  state.session = null;
+  await reloadData();
+}
+
+function exitReview() {
+  state.session = null;
+  switchView('home');
+}
+
+/* ---------------- LIBRARY VIEW ---------------- */
+function renderFilterChips() {
+  const wrap = $('#filter-chips');
+  wrap.innerHTML = '';
+  const allChip = el('div', 'chip' + (state.libraryFilterCategory === 'all' ? ' active' : ''), 'Todas');
+  allChip.onclick = () => { state.libraryFilterCategory = 'all'; renderLibrary(); };
+  wrap.appendChild(allChip);
+
+  state.categories.forEach(c => {
+    const chip = el('div', 'chip' + (state.libraryFilterCategory === c.id ? ' active' : ''));
+    chip.innerHTML = `<span class="swatch" style="background:${c.color}"></span>${escapeHtml(c.name)}`;
+    chip.onclick = () => { state.libraryFilterCategory = c.id; renderLibrary(); };
+    wrap.appendChild(chip);
+  });
+
+  const noCat = state.allWords.some(w => !w.categoryId);
+  if (noCat) {
+    const chip = el('div', 'chip' + (state.libraryFilterCategory === 'none' ? ' active' : ''), 'Sem categoria');
+    chip.onclick = () => { state.libraryFilterCategory = 'none'; renderLibrary(); };
+    wrap.appendChild(chip);
+  }
+}
+
+function renderLibrary() {
+  renderFilterChips();
+  const list = $('#word-list');
+  list.innerHTML = '';
+
+  let words = [...state.allWords];
+  if (state.libraryFilterCategory === 'none') {
+    words = words.filter(w => !w.categoryId);
+  } else if (state.libraryFilterCategory !== 'all') {
+    words = words.filter(w => w.categoryId === state.libraryFilterCategory);
+  }
+  const q = state.librarySearch.trim().toLowerCase();
+  if (q) {
+    words = words.filter(w => w.english.toLowerCase().includes(q) || w.portuguese.toLowerCase().includes(q));
+  }
+  words.sort((a, b) => a.english.localeCompare(b.english, 'en'));
+
+  $('#library-empty').classList.toggle('hidden', words.length > 0);
+
+  const now = new Date();
+  words.forEach(w => {
+    const row = el('li', 'word-row');
+    const isLate = new Date(w.dueDate) < now && !isSameDay(w.dueDate, now);
+    const isToday = isSameDay(w.dueDate, now) || new Date(w.dueDate) <= now;
+    const dueClass = isLate ? 'late' : (isToday ? 'today' : '');
+    row.innerHTML = `
+      <span class="status-dot ${w.status}"></span>
+      <span class="info">
+        <div class="en">${escapeHtml(w.english)}</div>
+        <div class="pt">${escapeHtml(w.portuguese)}</div>
+      </span>
+      <span class="meta">
+        <div class="due ${dueClass}">${formatDueRelative(w.dueDate)}</div>
+      </span>
     `;
-
-            document.body.appendChild(levelUpDiv);
-
-            setTimeout(() => {
-                levelUpDiv.remove();
-            }, 4000);
-
-            speak(`Parabéns! Você subiu para o nível ${newLevel}!`, 'pt');
-        }
-        // Calcular porcentagem de progresso
-        function getProgressPercentage() {/* % para próximo nível */
-            if (playerStats.level >= LEVEL_SYSTEM.maxLevel) return 100;
-            const xpNeeded = getXPNeededForNextLevel(playerStats.level);
-            return Math.min(100, Math.round((playerStats.currentXP / xpNeeded) * 100));
-        }
-        // Calcular pontuação da resposta
-        function calculateScore(difficulty, isCorrect, timeSpent = 0) {/* calcula pontos */
-            if (!isCorrect) return 0;
-
-            let points = SCORE_SYSTEM.points[difficulty] || 10;
-
-            // Bonus por resposta rápida (menos de 10 segundos)
-            if (timeSpent < 10000) {
-                points += SCORE_SYSTEM.bonuses.fastAnswer;
-            }
-
-            // Bonus por sequência
-            if (gameState.currentStreak >= 3) {
-                points += SCORE_SYSTEM.bonuses.streak * Math.floor(gameState.currentStreak / 3);
-            }
-
-            return points;
-        }
-        // Atualizar sequência de acertos
-        function updateStreak(isCorrect) {/* gerencia streaks */
-            if (isCorrect) {
-                gameState.currentStreak++;
-                playerStats.streak++;
-                if (playerStats.streak > playerStats.maxStreak) {
-                    playerStats.maxStreak = playerStats.streak;
-                }
-            } else {
-                gameState.currentStreak = 0;
-                playerStats.streak = 0;
-            }
-        }
-        // ==========================================
-        // 5. FUNÇÕES DE IMPORTAÇÃO/EXPORTAÇÃO
-        // ==========================================
-        // Exportar frases para JSON, Import/Export functions
-        function exportPhrases() {/* exporta dados */
-            if (phrases.length === 0) {
-                alert('Não há frases para exportar!');
-                return;
-            }
-
-            const dataStr = JSON.stringify(phrases, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `english-phrases-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-
-            URL.revokeObjectURL(link.href);
-        }
-        // Importar frases de arquivo
-        async function importPhrases(event) {/* importa dados */
-            const file = event.target.files[0];
-            if (!file) return;
-
-            try {
-                const text = await file.text();
-                const importedPhrases = JSON.parse(text);
-
-                // Validate structure
-                if (!Array.isArray(importedPhrases)) {
-                    throw new Error('Formato inválido: esperado um array de frases');
-                }
-
-                // Validate each phrase
-                for (const phrase of importedPhrases) {
-                    if (!phrase.english || !phrase.portuguese || !phrase.category || !phrase.difficulty) {
-                        throw new Error('Formato inválido: frases devem ter english, portuguese, category e difficulty');
-                    }
-                }
-
-                // Verificar duplicatas por conteúdo (não por ID)
-                const existingPhrases = new Set(phrases.map(p => `${p.english.toLowerCase()}|${p.portuguese.toLowerCase()}`));
-                const newPhrases = importedPhrases.filter(phrase =>
-                    !existingPhrases.has(`${phrase.english.toLowerCase()}|${phrase.portuguese.toLowerCase()}`)
-                );
-
-                if (newPhrases.length === 0) {
-                    alert('⚠️ Nenhuma frase nova encontrada. Todas as frases já existem.');
-                    event.target.value = '';
-                    return;
-                }
-
-                // Generate new IDs to avoid conflicts
-                const maxId = phrases.length > 0 ? Math.max(...phrases.map(p => p.id)) : 0;
-                newPhrases.forEach((phrase, index) => {
-                    phrase.id = maxId + index + 1;
-                });
-
-                // Merge with existing phrases
-                phrases = [...phrases, ...newPhrases];
-
-                // Save to IndexedDB
-                await savePhrases();
-
-                // Refresh display
-                loadPhrasesList();
-
-                const duplicates = importedPhrases.length - newPhrases.length;
-                let message = `✅ ${newPhrases.length} frases importadas com sucesso!`;
-                if (duplicates > 0) {
-                    message += `\n⚠️ ${duplicates} frases duplicadas foram ignoradas.`;
-                }
-                alert(message);
-
-            } catch (error) {
-                alert(`❌ Erro ao importar: ${error.message}`);
-            }
-
-            // Clear file input
-            event.target.value = '';
-        }
-        // Função para adicionar frases via script (para desenvolvedores)
-        async function addPhrasesToScript(newPhrases) {/* adiciona por código */
-            if (!Array.isArray(newPhrases)) {
-                console.error('addPhrasesToScript: parâmetro deve ser um array');
-                return;
-            }
-
-            const maxId = phrases.length > 0 ? Math.max(...phrases.map(p => p.id)) : 0;
-
-            newPhrases.forEach((phrase, index) => {
-                if (phrase.english && phrase.portuguese && phrase.category && phrase.difficulty) {
-                    phrase.id = maxId + index + 1;
-                    phrases.push(phrase);
-                }
-            });
-
-            await savePhrases();
-            loadPhrasesList();
-            console.log(`${newPhrases.length} frases adicionadas via script`);
-        }
-        // ==========================================
-        // 6. FUNÇÕES DE NAVEGAÇÃO (TABS)
-        // ==========================================
-
-        // Tab functionality, Event listeners para tabs
-        document.querySelectorAll('.tab').forEach(tab => {/* gerencia tabs */
-            tab.addEventListener('click', () => {
-                const targetTab = tab.dataset.tab;
-
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                tab.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
-
-                if (targetTab === 'manage') {
-                    loadPhrasesList();
-                }
-            });
-        });
-        // ==========================================
-        // 7. FUNÇÕES DE ÁUDIO E UTILIDADES
-        // ==========================================
-        // Speech synthesis functions, // Sintetizador de voz
-        function speak(text, lang) {/* fala texto */
-            if (!document.getElementById('enableVoice').checked) return;
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang === 'pt' ? 'pt-BR' : 'en-US';
-            utterance.rate = 0.8;
-            speechSynthesis.speak(utterance);
-        }
-        // Embaralhar array
-        function shuffleArray(array) {/* randomiza ordem */
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-        //multipla escolha
-        // Gerar alternativas para múltipla escolha
-        function generateMultipleChoiceOptions(correctAnswer, allPhrases, direction = 'en-pt') {
-            const currentQuestion = gameState.currentQuestion;
-
-            // Se a pergunta tem opções customizadas, use elas
-            if (currentQuestion.customOptions && currentQuestion.customOptions.length > 0) {
-                return shuffleArray([...currentQuestion.customOptions]);
-            }
-
-            // Caso contrário, use a lógica original
-            const options = [correctAnswer];
-            const isEnglishToPortuguese = direction === 'en-pt';
-            const availablePhrases = allPhrases.filter(p => {
-                const phraseAnswer = isEnglishToPortuguese ? p.portuguese : p.english;
-                return phraseAnswer !== correctAnswer && p.category === currentQuestion.category;
-            });
-
-            while (options.length < 4 && availablePhrases.length > 0) {
-                const randomIndex = Math.floor(Math.random() * availablePhrases.length);
-                const randomPhrase = availablePhrases.splice(randomIndex, 1)[0];
-                const phraseAnswer = isEnglishToPortuguese ? randomPhrase.portuguese : randomPhrase.english;
-                options.push(phraseAnswer);
-            }
-
-            if (options.length < 4) {
-                const otherPhrases = allPhrases.filter(p => {
-                    const phraseAnswer = isEnglishToPortuguese ? p.portuguese : p.english;
-                    return phraseAnswer !== correctAnswer;
-                });
-                while (options.length < 4 && otherPhrases.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * otherPhrases.length);
-                    const randomPhrase = otherPhrases.splice(randomIndex, 1)[0];
-                    const phraseAnswer = isEnglishToPortuguese ? randomPhrase.portuguese : randomPhrase.english;
-                    options.push(phraseAnswer);
-                }
-            }
-
-            return shuffleArray(options);
-        }
-        // ==========================================
-        // 8. FUNÇÕES DE INTERFACE DO JOGO
-        // ==========================================
-        // Atualizar status visual do jogo
-        function updateGameStatus() {/* atualiza UI com stats */
-            document.getElementById('currentScore').textContent = gameState.score;
-            document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
-            document.getElementById('currentQuestionNum').textContent = gameState.currentQuestionNum;
-            document.getElementById('totalPhrases').textContent = phrases.length;
-            document.getElementById('remainingQuestions').textContent = gameState.availableQuestions.length;
-
-            // Adicionar informação de nível
-            const statusCards = document.querySelector('.game-status');
-            let levelCard = document.querySelector('.level-card');
-
-            if (!levelCard) {
-                levelCard = document.createElement('div');
-                levelCard.className = 'status-card level-card';
-                statusCards.appendChild(levelCard);
-            }
-
-            const progressPercent = getProgressPercentage();
-            const nextLevelXP = getXPNeededForNextLevel(playerStats.level);
-
-            levelCard.innerHTML = `
-            <h3>⭐ Nível ${playerStats.level}</h3>
-            <div class="xp-bar">
-                <div class="xp-progress" style="width: ${progressPercent}%"></div>
-            </div>
-            <div class="xp-text">${playerStats.currentXP}/${nextLevelXP} XP</div>
-            ${playerStats.currentTitle ? `<div class="player-title">👑 ${playerStats.currentTitle}</div>` : ''}
-            `;
-
-            // Streak card (mantém o código existente)
-            let streakCard = document.querySelector('.streak-card');
-            if (gameState.currentStreak > 0) {
-                if (!streakCard) {
-                    streakCard = document.createElement('div');
-                    streakCard.className = 'status-card streak-card';
-                    statusCards.appendChild(streakCard);
-                }
-                streakCard.innerHTML = `
-            <h3>🔥 Sequência</h3>
-            <div class="status-value">${gameState.currentStreak}</div>
-            `;
-            } else if (streakCard) {
-                streakCard.remove();
-            }
-        }
-        // Filtrar frases por categoria/dificuldade
-        function getFilteredPhrases() {/* aplica filtros */
-            const selectedCategory = document.getElementById('categorySelect').value;
-            const selectedDifficulty = document.getElementById('difficultySelect').value;
-
-            return phrases.filter(phrase => {
-                const categoryMatch = selectedCategory === 'all' || phrase.category === selectedCategory;
-                const difficultyMatch = selectedDifficulty === 'all' || phrase.difficulty === selectedDifficulty;
-                return categoryMatch && difficultyMatch;
-            });
-        }
-        // ==========================================
-        // 9. FUNÇÕES PRINCIPAIS DO JOGO
-        // ==========================================
-        // Iniciar novo jogo
-        function startGame() {/* inicia partida */
-            const filteredPhrases = getFilteredPhrases();
-
-            if (phrases.length === 0) {
-                alert('Adicione algumas frases primeiro na aba "Gerenciar Frases"');
-                return;
-            }
-
-            if (filteredPhrases.length === 0) {
-                alert('Nenhuma frase encontrada com os filtros selecionados. Tente outras opções.');
-                return;
-            }
-
-            gameState = {
-                availableQuestions: [...filteredPhrases],
-                currentQuestion: null,
-                selectedWords: [],
-                score: 0,
-                totalQuestions: 0,
-                currentQuestionNum: 0,
-                gameActive: true
-            };
-
-            // Adicionar após definir o gameState
-            gameState.roundStartTime = Date.now();
-            gameState.roundScore = 0;
-            gameState.currentStreak = 0;
-
-            updateGameStatus();
-            nextQuestion();
-        }
-        // Próxima pergunta
-        function nextQuestion() {/* carrega próxima questão */
-            if (gameState.availableQuestions.length === 0) {
-                endGame();
-                return;
-            }
-
-            // Get random question from available questions
-            const randomIndex = Math.floor(Math.random() * gameState.availableQuestions.length);
-            gameState.currentQuestion = gameState.availableQuestions[randomIndex];
-            gameState.availableQuestions.splice(randomIndex, 1);
-
-            gameState.totalQuestions++;
-            gameState.currentQuestionNum++;
-            gameState.selectedWords = [];
-
-            gameState.roundStartTime = Date.now(); // Reset timer para cada pergunta
-
-            updateGameStatus();
-            renderQuestion();
-            hideFeedback();
-
-            // Show reset button
-            document.getElementById('resetBtn').style.display = 'inline-block';
-        }
-        // Renderizar pergunta na tela
-        function renderQuestion() {
-            const gameContent = document.getElementById('gameContent');
-            const questionType = gameState.currentQuestion.type || 'selection';
-
-            if (questionType === 'multiple') {
-                renderMultipleChoiceQuestion();
-            } else {
-                renderSelectionQuestion();
-            }
-
-            // Speak the question baseado na direção
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            setTimeout(() => {
-                const questionType = gameState.currentQuestion.type || 'selection';
-
-                if (direction === 'en-pt') {
-                    if (questionType === 'selection') {
-                        const words = gameState.currentQuestion.portuguese.split(' ');
-                        const introText = words.length > 1 ? "Monte a frase corretamente" : "Qual o significado da palavra";
-                        speak(introText, 'pt');
-                    } else {
-                        speak("Qual o significado de", 'pt');
-                    }
-                    setTimeout(() => {
-                        // Aplicar regra de espaços para a pergunta em inglês
-                        const englishWords = gameState.currentQuestion.english.split(' ');
-                        const englishTextToSpeak = englishWords.every(word => word.length === 1)
-                            ? gameState.currentQuestion.english.replace(/\s+/g, '')
-                            : gameState.currentQuestion.english;
-                        speak(englishTextToSpeak, 'en');
-                    }, 1500);
-                } else {
-                    if (questionType === 'selection') {
-                        const words = gameState.currentQuestion.english.split(' ');
-                        const introText = words.length > 1 ? "Arrange the sentence correctly" : "What is the meaning of the word";
-                        speak(introText, 'en');
-                    } else {
-                        speak("What is the meaning of", 'en');
-                    }
-                    setTimeout(() => {
-                        // Aplicar regra de espaços para a pergunta em português
-                        const portugueseWords = gameState.currentQuestion.portuguese.split(' ');
-                        const portugueseTextToSpeak = portugueseWords.every(word => word.length === 1)
-                            ? gameState.currentQuestion.portuguese.replace(/\s+/g, '')
-                            : gameState.currentQuestion.portuguese;
-                        speak(portugueseTextToSpeak, 'pt');
-                    }, 1500);
-                }
-            }, 500);
-        }
-        // Renderizar pergunta de seleção (modo atual)
-        function renderSelectionQuestion() {
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            const isEnglishToPortuguese = direction === 'en-pt';
-
-            const questionText = isEnglishToPortuguese ? gameState.currentQuestion.english : gameState.currentQuestion.portuguese;
-            const answerText = isEnglishToPortuguese ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-            const words = answerText.split(' ');
-            const shuffledWords = shuffleArray(words);
-
-            const answerWords = answerText.split(' ');
-            const questionLabel = isEnglishToPortuguese
-                ? (answerWords.length > 1 ? "Monte a frase corretamente:" : "Qual o significado da palavra:")
-                : (answerWords.length > 1 ? "Arrange the sentence correctly:" : "What is the meaning of the word:");
-
-            const instructionText = isEnglishToPortuguese
-                ? (answerWords.length > 1 ? "🎯 Monte a frase na ordem correta:" : "🎯 Selecione as palavras para formar a tradução:")
-                : (answerWords.length > 1 ? "🎯 Arrange the sentence in correct order:" : "🎯 Select the words to form the translation:");
-            const gameContent = document.getElementById('gameContent');
-
-            gameContent.innerHTML = `
-                <div class="question">${questionLabel}</div>
-                <div class="english-phrase">"${questionText}"</div>
-                
-                <div class="answer-area">
-                    <h4>${instructionText}</h4>
-                    <div class="selected-words empty" id="selectedWordsArea">
-                        Clique nas palavras abaixo para formar a frase
-                    </div>
-                    
-                    <div class="word-buttons" id="wordButtons">
-                        ${shuffledWords.map((word, index) => `
-                            <button class="word-btn" onclick="selectWord('${word}', ${index})" id="word-${index}">
-                                ${word}
-                            </button>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="game-actions">
-                        <button class="btn" onclick="checkAnswer()" id="checkBtn">✅ Verificar Resposta</button>
-                        <button class="btn btn-secondary" onclick="showAnswer()">👁️ Ver Resposta</button>
-                        <button class="btn btn-secondary" onclick="clearSelection()">🗑️ Limpar</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Renderizar pergunta de múltipla escolha
-        function renderMultipleChoiceQuestion() {
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            const isEnglishToPortuguese = direction === 'en-pt';
-
-            const questionText = isEnglishToPortuguese ? gameState.currentQuestion.english : gameState.currentQuestion.portuguese;
-            const correctAnswer = isEnglishToPortuguese ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-
-            const options = generateMultipleChoiceOptions(correctAnswer, phrases, direction);
-            const gameContent = document.getElementById('gameContent');
-
-            const questionLabel = isEnglishToPortuguese ? "Qual o significado de:" : "What is the meaning of:";
-            const instructionText = isEnglishToPortuguese ? "🎯 Escolha a tradução correta:" : "🎯 Choose the correct translation:";
-
-            gameContent.innerHTML = `
-                <div class="question">${questionLabel}</div>
-                <div class="english-phrase">"${questionText}"</div>
-                
-                <div class="answer-area">
-                    <h4>${instructionText}</h4>
-                    <div class="multiple-choice-options" id="multipleChoiceOptions">
-                        ${options.map((option, index) => `
-                            <button class="choice-btn" onclick="selectMultipleChoice(\`${option}\`, ${index})" id="choice-${index}">
-                                ${String.fromCharCode(65 + index)}) ${option}
-                            </button>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="game-actions">
-                        <button class="btn btn-secondary" onclick="showAnswer()">👁️ Ver Resposta</button>
-                    </div>
-                </div>
-            `;
-        }
-        // Selecionar opção de múltipla escolha
-        function selectMultipleChoice(selectedOption, optionIndex) {
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            const correctAnswer = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-            const isCorrect = selectedOption === correctAnswer;
-
-            // Destacar a opção selecionada
-            const buttons = document.querySelectorAll('.choice-btn');
-            buttons.forEach((btn, index) => {
-                btn.disabled = true;
-                if (index === optionIndex) {
-                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
-                }
-                // Destacar a resposta correta se errou
-                if (!isCorrect && btn.textContent.includes(correctAnswer)) {
-                    btn.classList.add('correct');
-                }
-            });
-
-            // Processar resultado (usar a mesma lógica do checkAnswer)
-            if (isCorrect) {
-                const timeSpent = Date.now() - gameState.roundStartTime;
-                const earnedPoints = calculateScore(gameState.currentQuestion.difficulty, true, timeSpent);
-
-                gameState.score += earnedPoints;
-                gameState.roundScore += earnedPoints;
-
-                const xpGained = SCORE_SYSTEM.points[gameState.currentQuestion.difficulty] / 2;
-                addXP(xpGained);
-
-                updateStreak(true);
-                playerStats.correctAnswers++;
-                playerStats.totalScore += earnedPoints;
-
-                showFeedback(`🎉 Perfeito! +${earnedPoints} pontos!`, 'correct');
-                speak('Perfeito! Você acertou!', 'pt');
-            } else {
-                updateStreak(false);
-                showFeedback(`❌ Incorreto! A resposta correta é: "${correctAnswer}"`, 'incorrect');
-                speak('Incorreto. A resposta correta é:', 'pt');
-                setTimeout(() => {
-                    // Remover espaços isolados (quando há espaços entre cada letra)
-                    const words = correctAnswer.split(' ');
-                    const textToSpeak = words.every(word => word.length === 1)
-                        ? correctAnswer.replace(/\s+/g, '')
-                        : correctAnswer;
-                    speak(textToSpeak, 'pt');
-                }, 1500);
-            }
-
-            playerStats.questionsAnswered++;
-            savePlayerStats();
-            updateGameStatus();
-
-            // Avançar para próxima pergunta
-            setTimeout(() => {
-                if (gameState.availableQuestions.length > 0) {
-                    nextQuestion();
-                } else {
-                    endGame();
-                }
-            }, 2000);
-        }
-        // Selecionar palavra
-        function selectWord(word, buttonIndex) {/* adiciona palavra à resposta */
-            const button = document.getElementById(`word-${buttonIndex}`);
-            if (button.disabled) return;
-
-            gameState.selectedWords.push(word);
-            button.disabled = true;
-
-            updateSelectedWordsDisplay();
-        }
-        // Remover palavra selecionada
-        function removeSelectedWord(wordIndex) {/* remove palavra da resposta */
-            const word = gameState.selectedWords[wordIndex];
-            gameState.selectedWords.splice(wordIndex, 1);
-
-            // Re-enable the button
-            const buttons = document.querySelectorAll('.word-btn');
-            buttons.forEach(btn => {
-                if (btn.textContent.trim() === word && btn.disabled) {
-                    btn.disabled = false;
-                    return;
-                }
-            });
-
-            updateSelectedWordsDisplay();
-        }
-        // Atualizar área de palavras selecionadas
-        function updateSelectedWordsDisplay() {/* atualiza UI das palavras */
-            const selectedWordsArea = document.getElementById('selectedWordsArea');
-
-            if (gameState.selectedWords.length === 0) {
-                selectedWordsArea.innerHTML = 'Clique nas palavras abaixo para formar a frase';
-                selectedWordsArea.className = 'selected-words empty';
-            } else {
-                selectedWordsArea.innerHTML = gameState.selectedWords.map((word, index) =>
-                    `<button class="selected-word" onclick="removeSelectedWord(${index})">${word}</button>`
-                ).join('');
-                selectedWordsArea.className = 'selected-words has-words';
-            }
-        }
-        // Limpar seleção atual
-        function clearSelection() {/* limpa resposta */
-            gameState.selectedWords = [];
-
-            // Re-enable all buttons
-            const buttons = document.querySelectorAll('.word-btn');
-            buttons.forEach(btn => btn.disabled = false);
-
-            updateSelectedWordsDisplay();
-        }
-        // Verificar resposta do usuário
-        function checkAnswer() {/* valida resposta */
-            if (gameState.selectedWords.length === 0) {
-                alert('Selecione algumas palavras primeiro!');
-                return;
-            }
-
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            const userAnswer = gameState.selectedWords.join(' ').toLowerCase().trim();
-            const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-            const correctAnswer = correctAnswerText.toLowerCase().trim();
-
-            const isCorrect = userAnswer === correctAnswer;
-
-            if (isCorrect) {
-                const timeSpent = Date.now() - gameState.roundStartTime;
-                const earnedPoints = calculateScore(gameState.currentQuestion.difficulty, true, timeSpent);
-
-                gameState.score += earnedPoints;
-                gameState.roundScore += earnedPoints;
-
-                // Adicionar XP baseado na dificuldade
-                const xpGained = SCORE_SYSTEM.points[gameState.currentQuestion.difficulty] / 2;
-                const leveledUp = addXP(xpGained);
-
-                if (leveledUp) {
-                    feedbackMsg += ` 🆙 LEVEL UP!`;
-                }
-
-                // Atualizar estatísticas
-                updateStreak(true);
-                playerStats.correctAnswers++;
-                playerStats.totalScore += earnedPoints;
-
-                let feedbackMsg = `🎉 Perfeito! +${earnedPoints} pontos!`;
-
-                // Mensagens especiais
-                if (timeSpent < 5000) {
-                    feedbackMsg += ' ⚡ Resposta relâmpago!';
-                }
-                if (gameState.currentStreak >= 3) {
-                    feedbackMsg += ` 🔥 Sequência de ${gameState.currentStreak}!`;
-                }
-
-                showFeedback(feedbackMsg, 'correct');
-                speak('Perfeito! Você acertou!', 'pt');
-
-                const buttons = document.querySelectorAll('.word-btn');
-                buttons.forEach(btn => btn.disabled = true);
-
-                setTimeout(() => {
-                    if (gameState.availableQuestions.length > 0) {
-                        nextQuestion();
-                    } else {
-                        endGame();
-                    }
-                }, 2000);
-
-            } else {
-                updateStreak(false);
-                showFeedback(`❌ Incorreto! A resposta correta é: "${correctAnswerText}"`, 'incorrect');
-                speak('Incorreto. A resposta correta é:', 'pt');
-                setTimeout(() => {
-                    const lang = direction === 'en-pt' ? 'pt' : 'en';
-                    // Remover espaços isolados (quando há espaços entre cada letra)
-                    const words = correctAnswerText.split(' ');
-                    const textToSpeak = words.every(word => word.length === 1)
-                        ? correctAnswerText.replace(/\s+/g, '')
-                        : correctAnswerText;
-                    speak(textToSpeak, lang);
-                }, 1500);
-            }
-
-            // Atualizar estatísticas gerais
-            playerStats.questionsAnswered++;
-            savePlayerStats();
-            updateGameStatus();
-
-        }
-        // Mostrar resposta correta
-        function showAnswer() {/* revela resposta */
-            const questionType = gameState.currentQuestion.type || 'selection';
-
-            if (questionType === 'multiple') {
-                // Para múltipla escolha, destacar a resposta correta
-                const buttons = document.querySelectorAll('.choice-btn');
-                buttons.forEach(btn => {
-                    if (btn.textContent.includes(gameState.currentQuestion.portuguese)) {
-                        btn.classList.add('correct');
-                    }
-                    btn.disabled = true;
-                });
-            } else {
-                // Código existente para seleção
-                const direction = gameState.currentQuestion.direction || 'en-pt';
-                const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-
-                gameState.selectedWords = correctAnswerText.split(' ');
-                updateSelectedWordsDisplay();
-                const buttons = document.querySelectorAll('.word-btn');
-                buttons.forEach(btn => btn.disabled = true);
-            }
-
-            const direction = gameState.currentQuestion.direction || 'en-pt';
-            const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
-
-            showFeedback(`💡 A resposta é: "${correctAnswerText}"`, 'correct');
-            const answerLang = direction === 'en-pt' ? 'pt' : 'en';
-            const introLang = direction === 'en-pt' ? 'pt' : 'en';
-            const introText = direction === 'en-pt' ? 'A resposta é:' : 'The answer is:';
-
-            speak(introText, introLang);
-            setTimeout(() => {
-                // Remover espaços isolados (quando há espaços entre cada letra)
-                const words = correctAnswerText.split(' ');
-                const textToSpeak = words.every(word => word.length === 1)
-                    ? correctAnswerText.replace(/\s+/g, '')
-                    : correctAnswerText;
-                speak(textToSpeak, answerLang);
-            }, 1000);
-        }
-        // Resetar rodada atual
-        function resetRound() {/* reinicia pergunta */
-            gameState.selectedWords = [];
-            updateSelectedWordsDisplay();
-
-            // Re-enable all buttons
-            const buttons = document.querySelectorAll('.word-btn');
-            buttons.forEach(btn => btn.disabled = false);
-
-            hideFeedback();
-        }
-        // Finalizar jogo
-        function endGame() {
-            const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
-
-            if (percentage === 100) {
-                gameState.roundScore += SCORE_SYSTEM.bonuses.perfectRound;
-                playerStats.totalScore += SCORE_SYSTEM.bonuses.perfectRound;
-            }
-
-            playerStats.gamesPlayed++;
-            playerStats.scoreHistory.push({
-                date: new Date().toISOString(),
-                score: gameState.roundScore,
-                percentage: percentage,
-                questions: gameState.totalQuestions
-            });
-
-            if (playerStats.scoreHistory.length > 50) {
-                playerStats.scoreHistory = playerStats.scoreHistory.slice(-50);
-            }
-
-            savePlayerStats();
-
-            const template = document.getElementById('endGameTemplate');
-            const clone = template.content.cloneNode(true);
-
-            let message = '';
-            if (percentage >= 90) {
-                message = '🏆 Excelente! Você é um mestre!';
-            } else if (percentage >= 70) {
-                message = '🎉 Muito bem! Continue assim!';
-            } else if (percentage >= 50) {
-                message = '👍 Bom trabalho! Pratique mais!';
-            } else {
-                message = '💪 Continue tentando! A prática leva à perfeição!';
-            }
-
-            clone.querySelector('.end-message').textContent = message;
-            clone.getElementById('roundScore').textContent = `${gameState.roundScore} pontos`;
-            clone.getElementById('correctAnswers').textContent = `${gameState.score}/${gameState.totalQuestions} (${percentage}%)`;
-            clone.getElementById('maxStreak').textContent = `${playerStats.maxStreak} acertos`;
-            clone.getElementById('totalScore').textContent = `${playerStats.totalScore} pontos`;
-
-            if (percentage === 100) {
-                clone.getElementById('perfectBonus').textContent = `+${SCORE_SYSTEM.bonuses.perfectRound} pontos`;
-                clone.getElementById('perfectBonusContainer').style.display = 'flex';
-            }
-
-            const gameContent = document.getElementById('gameContent');
-            gameContent.innerHTML = '';
-            gameContent.appendChild(clone);
-
-            document.getElementById('resetBtn').style.display = 'none';
-            gameState.gameActive = false;
-
-            speak(`Jogo concluído! Você fez ${gameState.roundScore} pontos.`, 'pt');
-        }
-
-        // ==========================================
-        // 10. FUNÇÕES DE ESTATÍSTICAS
-        // ==========================================
-        // Mostrar tela de estatísticas
-        function showStats() {/* exibe stats detalhadas */
-            const gameContent = document.getElementById('gameContent');
-            const template = document.getElementById('statsTemplate');
-            const clone = template.content.cloneNode(true);
-
-            const avgScore = playerStats.gamesPlayed > 0 ? Math.round(playerStats.totalScore / playerStats.gamesPlayed) : 0;
-            const accuracy = playerStats.questionsAnswered > 0 ? Math.round((playerStats.correctAnswers / playerStats.questionsAnswered) * 100) : 0;
-
-            clone.querySelector('[data-stat="totalScore"]').textContent = playerStats.totalScore;
-            clone.querySelector('[data-stat="gamesPlayed"]').textContent = playerStats.gamesPlayed;
-            clone.querySelector('[data-stat="avgScore"]').textContent = avgScore;
-            clone.querySelector('[data-stat="accuracy"]').textContent = accuracy + '%';
-            clone.querySelector('[data-stat="maxStreak"]').textContent = playerStats.maxStreak;
-            clone.querySelector('[data-stat="correctAnswers"]').textContent = playerStats.correctAnswers;
-            clone.querySelector('[data-stat="level"]').textContent = playerStats.level;
-            clone.querySelector('[data-stat="currentXP"]').textContent = playerStats.currentXP;
-            clone.querySelector('[data-stat="xpNeeded"]').textContent = getXPNeededForNextLevel(playerStats.level);
-            clone.querySelector('[data-stat="xpProgress"]').style.width = getProgressPercentage() + '%';
-            clone.querySelector('[data-stat="totalXP"]').textContent = playerStats.totalXP;
-
-            // Lida com os títulos
-            if (playerStats.titles.length > 0) {
-                const titlesCard = clone.getElementById('titlesCard');
-                titlesCard.style.display = '';
-                clone.querySelector('[data-stat="titlesCount"]').textContent = playerStats.titles.length;
-                clone.querySelector('[data-stat="titlesList"]').textContent = playerStats.titles.join(', ');
-            }
-
-            // Limpa e insere no DOM
-            gameContent.innerHTML = '';
-            gameContent.appendChild(clone);
-        }
-        // Resetar todas as estatísticas
-        function resetStats() {/* limpa dados salvos */
-            if (confirm('Tem certeza que deseja resetar todas as estatísticas?')) {
-                playerStats = {
-                    totalScore: 0,
-                    gamesPlayed: 0,
-                    questionsAnswered: 0,
-                    correctAnswers: 0,
-                    streak: 0,
-                    maxStreak: 0,
-                    scoreHistory: []
-                };
-                savePlayerStats();
-                showStats();
-            }
-        }
-        // ==========================================
-        // 11. FUNÇÕES DE FEEDBACK VISUAL
-        // ==========================================
-        // Mostrar feedback na tela
-        function showFeedback(message, type) {/* exibe mensagem */
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = message;
-            feedback.className = `feedback ${type}`;
-            feedback.style.display = 'block';
-        }
-        // Esconder feedback
-        function hideFeedback() {/* oculta mensagem */
-            document.getElementById('feedback').style.display = 'none';
-        }
-        // ==========================================
-        // 12. FUNÇÕES DE GERENCIAMENTO DE FRASES
-        // ==========================================
-        // Atualizar labels do modal conforme direção
-        function updateModalLabels() {
-            const direction = document.getElementById('questionDirection').value;
-            const labelEnglish = document.getElementById('labelEnglish');
-            const labelPortuguese = document.getElementById('labelPortuguese');
-
-            if (direction === 'pt-en') {
-                labelPortuguese.textContent = 'Frase em Português:';
-                labelEnglish.textContent = 'Tradução em Inglês:';
-            } else {
-                labelPortuguese.textContent = 'Tradução em Português:';
-                labelEnglish.textContent = 'Frase em Inglês:';
-            }
-        }
-        // Carregar lista de frases
-        function loadPhrasesList() {/* exibe lista no gerenciador */
-            const list = document.getElementById('phrasesList');
-
-            if (phrases.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">Nenhuma frase cadastrada. Adicione sua primeira frase!</p>';
-                return;
-            }
-
-            list.innerHTML = phrases.map(phrase => `
-                <div class="phrase-item">
-                    <div class="phrase-content">
-                        <div class="phrase-english">${phrase.english}</div>
-                        <div class="phrase-portuguese">${phrase.portuguese}</div>
-                        <!-- ADICIONAR ESTAS LINHAS: -->
-                        <div class="phrase-meta">
-                            <span class="category-badge">${CATEGORIES[phrase.category] || phrase.category}</span>
-                            <span class="difficulty-badge difficulty-${phrase.difficulty}">${phrase.difficulty}</span>
-                        </div>
-                    </div>
-                    <div class="phrase-actions">
-                        <button class="btn btn-secondary btn-small" onclick="editPhrase(${phrase.id})">✏️ Editar</button>
-                        <button class="btn btn-danger btn-small" onclick="deletePhrase(${phrase.id})">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        // Abrir modal de adição
-        function openAddModal() {/* modal para nova frase */
-            editingId = null;
-            document.getElementById('modalTitle').textContent = 'Adicionar Nova Frase';
-            document.getElementById('englishPhrase').value = '';
-            document.getElementById('portugueseTranslation').value = '';
-            document.getElementById('questionDirection').value = '';
-            document.getElementById('customOptionsContainer').style.display = 'none';
-            document.getElementById('customOptions').value = '';
-            updateModalLabels();
-            document.getElementById('phraseModal').style.display = 'block';
-        }
-        // Editar frase existente
-        function editPhrase(id) {/* modal para editar */
-            const phrase = phrases.find(p => p.id === id);
-            if (!phrase) return;
-
-            editingId = id;
-            document.getElementById('modalTitle').textContent = 'Editar Frase';
-            document.getElementById('englishPhrase').value = phrase.english;
-            document.getElementById('portugueseTranslation').value = phrase.portuguese;
-            // ADICIONAR ESTAS LINHAS:
-            document.getElementById('categorySelect2').value = phrase.category || '';
-            document.getElementById('difficultySelect2').value = phrase.difficulty || '';
-            document.getElementById('gameTypeSelect').value = phrase.type || 'selection';
-            //para mudar a direçao da pergunta
-            document.getElementById('questionDirection').value = phrase.direction || 'en-pt';
-            if (phrase.type === 'multiple' && phrase.customOptions) {
-                document.getElementById('customOptions').value = phrase.customOptions.join('\n');
-                document.getElementById('customOptionsContainer').style.display = 'block';
-            } else {
-                document.getElementById('customOptionsContainer').style.display = 'none';
-            }
-            toggleCustomOptions(); // Chama a função para mostrar/ocultar o campo
-            updateModalLabels();
-            document.getElementById('phraseModal').style.display = 'block';
-
-        }
-        // Excluir frase
-        async function deletePhrase(id) {/* remove frase */
-            if (confirm('Tem certeza que deseja excluir esta frase?')) {
-                phrases = phrases.filter(p => p.id !== id);
-                await savePhrases();
-                loadPhrasesList();
-            }
-        }
-        // Limpar todas as frases
-        async function clearAllPhrases() {/* remove todas */
-            if (confirm('Tem certeza que deseja excluir todas as frases? Esta ação não pode ser desfeita.')) {
-                phrases = [];
-                await savePhrases();
-                loadPhrasesList();
-            }
-        }
-        // Fechar modal
-        function closeModal() {/* fecha janela modal */
-            document.getElementById('phraseModal').style.display = 'none';
-        }
-        // Fecha o modal ao clicar fora do conteúdo
-        window.addEventListener('click', function (event) {
-            const modal = document.getElementById('phraseModal');
-            const modalContent = modal.querySelector('.modal-content');
-
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Mostrar/ocultar campo de opções customizadas
-        function toggleCustomOptions() {
-            const gameType = document.getElementById('gameTypeSelect').value;
-            const customContainer = document.getElementById('customOptionsContainer');
-
-            if (gameType === 'multiple') {
-                customContainer.style.display = 'block';
-            } else {
-                customContainer.style.display = 'none';
-            }
-        }
-        // ==========================================
-        // 13. EVENT LISTENERS
-        // ==========================================
-        // Event listener para mostrar/ocultar opções customizadas
-        document.getElementById('gameTypeSelect').addEventListener('change', toggleCustomOptions);
-        document.getElementById('questionDirection').addEventListener('change', updateModalLabels);
-        // Form submission, Formulário de frases
-        document.getElementById('phraseForm').addEventListener('submit', async function (e) {
-
-            e.preventDefault();
-
-            const englishPhrase = document.getElementById('englishPhrase').value.trim();
-            const portugueseTranslation = document.getElementById('portugueseTranslation').value.trim();
-            const category = document.getElementById('categorySelect2').value;
-            const difficulty = document.getElementById('difficultySelect2').value;
-            const gameType = document.getElementById('gameTypeSelect').value;
-            const questionDirection = document.getElementById('questionDirection').value;
-            const customOptions = document.getElementById('customOptions').value.trim();
-
-            if (!englishPhrase || !portugueseTranslation || !category || !difficulty || !gameType || !questionDirection) {
-                alert('Por favor, preencha todos os campos.');
-                return;
-            }
-
-            if (!englishPhrase || !portugueseTranslation || !category || !difficulty) {
-                alert('Por favor, preencha todos os campos.');
-                return;
-            }
-            // Adicione esta validação após verificar se os campos estão preenchidos
-            if (gameType === 'multiple') {
-                if (!customOptions) {
-                    alert('Para perguntas de múltipla escolha, adicione pelo menos as opções de resposta.');
-                    return;
-                }
-
-                const optionsArray = customOptions.split('\n').map(opt => opt.trim()).filter(opt => opt);
-                if (optionsArray.length < 2) {
-                    alert('Adicione pelo menos 2 opções de resposta.');
-                    return;
-                }
-
-                if (!optionsArray.includes(portugueseTranslation)) {
-                    alert('A resposta correta deve estar incluída nas opções.');
-                    return;
-                }
-            }
-            // Substitua a parte onde você salva a frase por:
-
-            const customOptionsArray = customOptions ? customOptions.split('\n').map(opt => opt.trim()).filter(opt => opt) : null;
-
-            if (editingId) {
-                const phrase = phrases.find(p => p.id === editingId);
-                if (phrase) {
-                    phrase.english = englishPhrase;
-                    phrase.portuguese = portugueseTranslation;
-                    phrase.category = category;
-                    phrase.difficulty = difficulty;
-                    phrase.type = gameType;
-                    phrase.direction = questionDirection;
-                    phrase.customOptions = customOptionsArray;
-                }
-            } else {
-                const newId = Math.max(...phrases.map(p => p.id), 0) + 1;
-                phrases.push({
-                    id: newId,
-                    english: englishPhrase,
-                    portuguese: portugueseTranslation,
-                    category: category,
-                    difficulty: difficulty,
-                    type: gameType,
-                    direction: questionDirection,
-                    customOptions: customOptionsArray
-                });
-            }
-
-            await savePhrases();
-            closeModal();
-            loadPhrasesList();
-        });
-        // ==========================================
-        // 14. INICIALIZAÇÃO FINAL
-        // ==========================================
-
-        // Chamada da função principal
-        init();
-    </script>
+    row.onclick = () => openWordModal(w.id);
+    list.appendChild(row);
+  });
+}
+
+/* ---------------- WORD MODAL ---------------- */
+function populateCategorySelect(selectEl, includeNone = true) {
+  selectEl.innerHTML = '';
+  if (includeNone) selectEl.appendChild(new Option('Sem categoria', ''));
+  state.categories.forEach(c => selectEl.appendChild(new Option(c.name, c.id)));
+}
+
+function openWordModal(wordId) {
+  state.editingWordId = wordId || null;
+  const word = wordId ? state.allWords.find(w => w.id === wordId) : null;
+
+  $('#word-modal-title').textContent = word ? 'Editar palavra' : 'Nova palavra';
+  populateCategorySelect($('#word-category-input'));
+
+  $('#word-id-input').value = word ? word.id : '';
+  $('#word-english-input').value = word ? word.english : '';
+  $('#word-portuguese-input').value = word ? word.portuguese : '';
+  $('#word-category-input').value = word && word.categoryId ? word.categoryId : '';
+  $('#word-example-input').value = word ? (word.example || '') : '';
+  $('#word-example-tr-input').value = word ? (word.exampleTranslation || '') : '';
+  $('#word-notes-input').value = word ? (word.notes || '') : '';
+
+  $('#btn-delete-word').classList.toggle('hidden', !word);
+  openOverlay('#overlay-word');
+  setTimeout(() => $('#word-english-input').focus(), 250);
+}
+
+async function saveWordFromModal() {
+  const english = $('#word-english-input').value.trim();
+  const portuguese = $('#word-portuguese-input').value.trim();
+  if (!english || !portuguese) {
+    showToast('Preencha inglês e português');
+    return;
+  }
+  const categoryVal = $('#word-category-input').value;
+  const categoryId = categoryVal ? Number(categoryVal) : null;
+  const example = $('#word-example-input').value.trim();
+  const exampleTranslation = $('#word-example-tr-input').value.trim();
+  const notes = $('#word-notes-input').value.trim();
+
+  if (state.editingWordId) {
+    const word = await dbGetWord(state.editingWordId);
+    Object.assign(word, { english, portuguese, categoryId, example, exampleTranslation, notes });
+    await dbUpdateWord(word);
+    showToast('Palavra atualizada');
+  } else {
+    const word = {
+      english, portuguese, categoryId, example, exampleTranslation, notes,
+      createdAt: nowISO(),
+      ...makeNewWordSRSFields(),
+    };
+    await dbAddWord(word);
+    showToast('Palavra adicionada');
+  }
+  closeOverlay('#overlay-word');
+  await reloadData();
+  renderLibrary();
+  if (state.currentView === 'home') renderHome();
+}
+
+async function deleteWordFromModal() {
+  if (!state.editingWordId) return;
+  closeOverlay('#overlay-word');
+  openConfirm('Excluir palavra?', 'Essa ação não pode ser desfeita.', async () => {
+    await dbDeleteWord(state.editingWordId);
+    state.editingWordId = null;
+    await reloadData();
+    renderLibrary();
+    showToast('Palavra excluída');
+  });
+}
+
+/* ---------------- CATEGORIES VIEW ---------------- */
+function wordCountForCategory(catId) {
+  return state.allWords.filter(w => w.categoryId === catId).length;
+}
+
+function renderCategories() {
+  const list = $('#category-list');
+  list.innerHTML = '';
+  $('#categories-empty').classList.toggle('hidden', state.categories.length > 0);
+
+  state.categories.forEach(c => {
+    const row = el('li', 'cat-row');
+    const count = wordCountForCategory(c.id);
+    row.innerHTML = `
+      <span class="swatch" style="background:${c.color}"></span>
+      <span class="info">
+        <div class="name">${escapeHtml(c.name)}</div>
+        <div class="count">${count} ${count === 1 ? 'palavra' : 'palavras'}</div>
+      </span>
+      <span class="actions">
+        <button class="icon-btn" data-act="edit"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
+      </span>
+    `;
+    row.querySelector('[data-act="edit"]').onclick = () => openCategoryModal(c.id);
+    list.appendChild(row);
+  });
+}
+
+function renderSwatchPicker(selectedColor) {
+  const wrap = $('#category-swatch-picker');
+  wrap.innerHTML = '';
+  CATEGORY_COLORS.forEach(color => {
+    const dot = el('div', 'swatch-opt' + (color === selectedColor ? ' selected' : ''));
+    dot.style.background = color;
+    dot.dataset.color = color;
+    dot.onclick = () => {
+      $all('.swatch-opt').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+    };
+    wrap.appendChild(dot);
+  });
+}
+
+function openCategoryModal(catId) {
+  state.editingCategoryId = catId || null;
+  const cat = catId ? categoryById(catId) : null;
+  $('#category-modal-title').textContent = cat ? 'Editar categoria' : 'Nova categoria';
+  $('#category-id-input').value = cat ? cat.id : '';
+  $('#category-name-input').value = cat ? cat.name : '';
+  renderSwatchPicker(cat ? cat.color : CATEGORY_COLORS[0]);
+  $('#btn-delete-category').classList.toggle('hidden', !cat);
+  openOverlay('#overlay-category');
+  setTimeout(() => $('#category-name-input').focus(), 250);
+}
+
+async function saveCategoryFromModal() {
+  const name = $('#category-name-input').value.trim();
+  if (!name) { showToast('Digite um nome'); return; }
+  const selectedSwatch = $('.swatch-opt.selected');
+  const color = selectedSwatch ? selectedSwatch.dataset.color : CATEGORY_COLORS[0];
+
+  const dup = state.categories.find(c => c.name.toLowerCase() === name.toLowerCase() && c.id !== state.editingCategoryId);
+  if (dup) { showToast('Já existe uma categoria com esse nome'); return; }
+
+  if (state.editingCategoryId) {
+    const cat = categoryById(state.editingCategoryId);
+    cat.name = name; cat.color = color;
+    await dbUpdateCategory(cat);
+    showToast('Categoria atualizada');
+  } else {
+    await dbAddCategory({ name, color, createdAt: nowISO() });
+    showToast('Categoria criada');
+  }
+  closeOverlay('#overlay-category');
+  await reloadData();
+  renderCategories();
+}
+
+async function deleteCategoryFromModal() {
+  if (!state.editingCategoryId) return;
+  const catId = state.editingCategoryId;
+  const count = wordCountForCategory(catId);
+  closeOverlay('#overlay-category');
+  const msg = count > 0
+    ? `${count} ${count === 1 ? 'palavra ficará' : 'palavras ficarão'} sem categoria. A categoria será removida.`
+    : 'Essa ação não pode ser desfeita.';
+  openConfirm('Excluir categoria?', msg, async () => {
+    await dbReassignCategoryWords(catId, null);
+    await dbDeleteCategory(catId);
+    await reloadData();
+    renderCategories();
+    showToast('Categoria excluída');
+  });
+}
+
+/* ---------------- OVERLAY / CONFIRM ---------------- */
+function openOverlay(sel) { $(sel).classList.add('open'); }
+function closeOverlay(sel) { $(sel).classList.remove('open'); }
+
+function openConfirm(title, body, onConfirm) {
+  $('#confirm-title').textContent = title;
+  $('#confirm-body').textContent = body;
+  state.confirmCallback = onConfirm;
+  openOverlay('#overlay-confirm');
+}
+
+/* ---------------- SETTINGS VIEW ---------------- */
+function renderSettings() {
+  $all('#seg-direction .seg-opt').forEach(o => o.classList.toggle('active', o.dataset.val === state.settings.direction));
+  $all('#seg-input-mode .seg-opt').forEach(o => o.classList.toggle('active', o.dataset.val === state.settings.inputMode));
+  $('#select-session-size').value = String(state.settings.sessionSize);
+
+  const exportSelect = $('#select-export-category');
+  exportSelect.innerHTML = '';
+  exportSelect.appendChild(new Option('Todas as categorias', 'all'));
+  state.categories.forEach(c => exportSelect.appendChild(new Option(c.name, c.id)));
+}
+
+async function saveSettings() {
+  await dbSetMeta('settings', state.settings);
+}
+
+/* ---------------- EXPORT / IMPORT ---------------- */
+function buildExportPayload(categoryFilter) {
+  let cats = state.categories;
+  let words = state.allWords;
+  if (categoryFilter !== 'all') {
+    const catId = Number(categoryFilter);
+    cats = state.categories.filter(c => c.id === catId);
+    words = state.allWords.filter(w => w.categoryId === catId);
+  }
+  return {
+    app: 'AprendeIngles',
+    formatVersion: 1,
+    exportedAt: nowISO(),
+    categories: cats.map(c => ({ name: c.name, color: c.color })),
+    words: words.map(w => ({
+      english: w.english,
+      portuguese: w.portuguese,
+      example: w.example || '',
+      exampleTranslation: w.exampleTranslation || '',
+      notes: w.notes || '',
+      category: categoryName(w.categoryId) === 'Sem categoria' ? '' : categoryName(w.categoryId),
+      srs: {
+        status: w.status, learningStep: w.learningStep, interval: w.interval,
+        easeFactor: w.easeFactor, repetitions: w.repetitions, lapses: w.lapses,
+        reviewsCount: w.reviewsCount, dueDate: w.dueDate, lastReviewed: w.lastReviewed,
+      }
+    }))
+  };
+}
+
+function downloadJSON(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportSelectedCategory() {
+  const val = $('#select-export-category').value;
+  const payload = buildExportPayload(val);
+  const label = val === 'all' ? 'todas' : categoryName(Number(val)).toLowerCase().replace(/\s+/g, '-');
+  if (payload.words.length === 0) { showToast('Nada para exportar nessa categoria'); return; }
+  downloadJSON(payload, `aprende-ingles-${label}.json`);
+  showToast(`${payload.words.length} palavras exportadas`);
+}
+
+async function findOrCreateCategoryByName(name) {
+  if (!name) return null;
+  let cat = state.categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+  if (cat) return cat.id;
+  const color = CATEGORY_COLORS[state.categories.length % CATEGORY_COLORS.length];
+  const id = await dbAddCategory({ name, color, createdAt: nowISO() });
+  state.categories.push({ id, name, color });
+  return id;
+}
+
+async function importWordsPayload(payload, { keepProgress = true } = {}) {
+  if (!payload || !Array.isArray(payload.words)) throw new Error('Arquivo inválido');
+  await reloadData();
+  let imported = 0, skipped = 0;
+
+  for (const item of payload.words) {
+    if (!item.english || !item.portuguese) { skipped++; continue; }
+    const categoryId = item.category ? await findOrCreateCategoryByName(item.category) : null;
+    const dup = state.allWords.find(w =>
+      w.english.toLowerCase() === item.english.toLowerCase() && w.categoryId === categoryId);
+    if (dup) { skipped++; continue; }
+
+    let srsFields = makeNewWordSRSFields();
+    if (keepProgress && item.srs) {
+      srsFields = {
+        status: item.srs.status || 'new',
+        learningStep: item.srs.learningStep || 0,
+        interval: item.srs.interval || 0,
+        easeFactor: item.srs.easeFactor || DEFAULT_EASE,
+        repetitions: item.srs.repetitions || 0,
+        lapses: item.srs.lapses || 0,
+        reviewsCount: item.srs.reviewsCount || 0,
+        lastReviewed: item.srs.lastReviewed || null,
+        dueDate: item.srs.dueDate || nowISO(),
+      };
+    }
+    const word = {
+      english: item.english, portuguese: item.portuguese,
+      example: item.example || '', exampleTranslation: item.exampleTranslation || '',
+      notes: item.notes || '', categoryId,
+      createdAt: nowISO(),
+      ...srsFields,
+    };
+    const id = await dbAddWord(word);
+    word.id = id;
+    state.allWords.push(word);
+    imported++;
+  }
+  return { imported, skipped };
+}
+
+async function handleImportFile(file) {
+  try {
+    const text = await file.text();
+    const payload = JSON.parse(text);
+    const { imported, skipped } = await importWordsPayload(payload, { keepProgress: true });
+    await reloadData();
+    renderLibrary();
+    if (state.currentView === 'home') renderHome();
+    if (state.currentView === 'categories') renderCategories();
+    showToast(`${imported} importadas${skipped ? `, ${skipped} ignoradas (duplicadas)` : ''}`);
+  } catch (err) {
+    console.error(err);
+    showToast('Não foi possível ler esse arquivo');
+  }
+}
+
+async function importStarterPack() {
+  const { imported, skipped } = await importWordsPayload(
+    { words: STARTER_PACK.words.map(([category, english, portuguese, example, exampleTranslation, notes]) => ({
+        category, english, portuguese, example, exampleTranslation, notes
+      })) },
+    { keepProgress: false }
+  );
+  await reloadData();
+  renderLibrary(); renderCategories();
+  if (state.currentView === 'home') renderHome();
+  showToast(`Pacote inicial: ${imported} palavras adicionadas${skipped ? `, ${skipped} já existiam` : ''}`);
+}
+
+/* ---------------- RESET / DELETE ALL ---------------- */
+function resetProgress() {
+  openConfirm('Zerar todo o progresso?', 'Todas as palavras voltam ao estágio "nova". Isso não pode ser desfeito.', async () => {
+    const all = await dbGetAllWords();
+    for (const w of all) {
+      Object.assign(w, makeNewWordSRSFields());
+      await dbUpdateWord(w);
+    }
+    await reloadData();
+    renderHome();
+    showToast('Progresso zerado');
+  });
+}
+
+function deleteAllData() {
+  openConfirm('Apagar tudo?', 'Todas as palavras e categorias serão excluídas permanentemente. Considere exportar antes.', async () => {
+    await dbClearAll();
+    await dbSetMeta('reviewLog', {});
+    await dbSetMeta('streak', 0);
+    await reloadData();
+    renderHome(); renderLibrary(); renderCategories();
+    showToast('Tudo apagado');
+  });
+}
+
+/* ---------------- EVENT BINDINGS ---------------- */
+function bindEvents() {
+  // Bottom nav
+  $all('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+
+  // Home
+  $('#btn-start-review').addEventListener('click', () => {
+    switchView('review');
+    startReviewSession();
+  });
+
+  // Review
+  $('#btn-exit-review').addEventListener('click', exitReview);
+  $('#flashcard').addEventListener('click', () => {
+    if (state.settings.inputMode !== 'typing' && state.session) revealCard();
+  });
+  $('#btn-reveal').addEventListener('click', revealCard);
+  $('#btn-check-typed').addEventListener('click', checkTypedAnswerSubmit);
+  $('#type-answer-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswerSubmit(); }
+  });
+  $all('.rate-btn').forEach(btn => {
+    btn.addEventListener('click', () => submitRating(Number(btn.dataset.rating)));
+  });
+  $('#btn-review-done-home').addEventListener('click', () => switchView('home'));
+
+  // Library
+  $('#search-input').addEventListener('input', (e) => {
+    state.librarySearch = e.target.value;
+    renderLibrary();
+  });
+  $('#fab-add-word').addEventListener('click', () => openWordModal(null));
+
+  // Word modal
+  $('#btn-cancel-word').addEventListener('click', () => closeOverlay('#overlay-word'));
+  $('#btn-save-word').addEventListener('click', saveWordFromModal);
+  $('#btn-delete-word').addEventListener('click', deleteWordFromModal);
+
+  // Categories
+  $('#btn-add-category').addEventListener('click', () => openCategoryModal(null));
+  $('#btn-cancel-category').addEventListener('click', () => closeOverlay('#overlay-category'));
+  $('#btn-save-category').addEventListener('click', saveCategoryFromModal);
+  $('#btn-delete-category').addEventListener('click', deleteCategoryFromModal);
+
+  // Confirm modal
+  $('#btn-confirm-cancel').addEventListener('click', () => {
+    closeOverlay('#overlay-confirm');
+    state.confirmCallback = null;
+  });
+  $('#btn-confirm-ok').addEventListener('click', async () => {
+    const cb = state.confirmCallback;
+    closeOverlay('#overlay-confirm');
+    state.confirmCallback = null;
+    if (cb) await cb();
+  });
+
+  // Overlays close on backdrop click
+  ['#overlay-word', '#overlay-category', '#overlay-confirm'].forEach(sel => {
+    $(sel).addEventListener('click', (e) => { if (e.target === $(sel)) closeOverlay(sel); });
+  });
+
+  // Settings
+  $all('#seg-direction .seg-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      state.settings.direction = opt.dataset.val;
+      renderSettings();
+      saveSettings();
+    });
+  });
+  $all('#seg-input-mode .seg-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      state.settings.inputMode = opt.dataset.val;
+      renderSettings();
+      saveSettings();
+    });
+  });
+  $('#select-session-size').addEventListener('change', (e) => {
+    state.settings.sessionSize = Number(e.target.value);
+    saveSettings();
+  });
+  $('#btn-export').addEventListener('click', exportSelectedCategory);
+  $('#import-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) await handleImportFile(file);
+    e.target.value = '';
+  });
+  $('#btn-import-starter').addEventListener('click', importStarterPack);
+  $('#btn-reset-progress').addEventListener('click', resetProgress);
+  $('#btn-delete-all').addEventListener('click', deleteAllData);
+}
+
+/* ---------------- INIT ---------------- */
+async function init() {
+  try {
+    await openDB();
+  } catch (err) {
+    console.error('Erro ao abrir o banco de dados', err);
+    showToast('Erro ao acessar o armazenamento local');
+    return;
+  }
+  await reloadData();
+  const savedSettings = await dbGetMeta('settings', null);
+  if (savedSettings) Object.assign(state.settings, savedSettings);
+  await updateStreak();
+  bindEvents();
+  switchView('home');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* Expõe alguns objetos no window só para depuração via console do navegador
+   (const/let no topo do script não viram propriedades de window automaticamente) */
+if (typeof window !== 'undefined') {
+  window.state = state;
+  window.RATING = RATING;
+  window.STARTER_PACK = STARTER_PACK;
+  window.CATEGORY_COLORS = CATEGORY_COLORS;
+}
+
+</script>
 </body>
-
 </html>
