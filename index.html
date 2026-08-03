@@ -562,7 +562,12 @@ select.native-select{
             <div class="card-face front">
               <div class="card-top">
                 <span class="card-no" id="card-no-front">Nº 0000</span>
-                <span class="card-tag" id="card-tag-front">—</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <button class="icon-btn" id="btn-play-front" style="width:28px;height:28px;border:none;background:var(--surface-2);" title="Ouvir carta">
+                    <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:2;"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+                  </button>
+                  <span class="card-tag" id="card-tag-front">—</span>
+                </div>
               </div>
               <div class="card-mid">
                 <span class="card-dir" id="card-dir-front">inglês → português</span>
@@ -661,6 +666,13 @@ select.native-select{
           <div class="seg-control" id="seg-input-mode">
             <span class="seg-opt" data-val="typing">Digitar</span>
             <span class="seg-opt" data-val="flip">Virar</span>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div><div class="lbl">Áudio Automático</div><div class="desc">Tocar o som sozinho ao mostrar ou virar a carta</div></div>
+          <div class="seg-control" id="seg-autoplay">
+            <span class="seg-opt" data-val="on">Ligado</span>
+            <span class="seg-opt" data-val="off">Desl.</span>
           </div>
         </div>
         <div class="settings-row">
@@ -1199,7 +1211,7 @@ const state = {
   currentView: 'home',
   categories: [],
   allWords: [],
-  settings: { direction: 'mixed', inputMode: 'typing', sessionSize: 20 },
+  settings: { direction: 'mixed', inputMode: 'typing', sessionSize: 20, autoplay: 'on' },
   session: null, // { queue:[], index:0, direction, results:{again,hard,good,easy}, startedAt }
   libraryFilterCategory: 'all',
   librarySearch: '',
@@ -1217,6 +1229,52 @@ function el(tag, cls, html) {
   if (html !== undefined) e.innerHTML = html;
   return e;
 }
+// --- INÍCIO DO MOTOR DE ÁUDIO ---
+function detectForeignLang(text) {
+  if (!text) return 'en-US';
+  // Truque offline: se tiver caracteres exclusivos ou artigos muito comuns do espanhol, assume ES.
+  // Caso contrário, assume o Inglês por padrão.
+  if (/[ñ¿¡áéíóú]/i.test(text) || /\b(el|la|los|las|un|una|y|en|que|por|para|con|de|del|al|como|más|pero|o)\b/i.test(text)) {
+    return 'es-ES';
+  }
+  return 'en-US';
+}
+
+function playBilingualAudio(sequence) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel(); // Corta qualquer fala anterior instantaneamente
+
+  sequence.forEach(item => {
+    if (!item.text) return; // Pula se não houver texto (ex: sem frase de exemplo)
+    const utterance = new SpeechSynthesisUtterance(item.text);
+    utterance.lang = item.lang;
+    utterance.rate = 0.9; // Velocidade ideal para absorção
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+function readWholeCard() {
+  const { word } = currentSessionWord();
+  const foreignLang = detectForeignLang(word.english);
+  
+  // Fila de reprodução: lê tudo no idioma correto, na sequência.
+  const sequence = [
+    { text: word.english, lang: foreignLang },
+    { text: word.portuguese.split('/')[0], lang: 'pt-BR' },
+    { text: word.example, lang: foreignLang },
+    { text: word.exampleTranslation, lang: 'pt-BR' }
+  ];
+  playBilingualAudio(sequence);
+}
+function readFrontCard() {
+  const { word, direction } = currentSessionWord();
+  const foreignLang = detectForeignLang(word.english);
+  const frontLang = direction === 'en-pt' ? foreignLang : 'pt-BR';
+  const frontText = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0];
+  
+  playBilingualAudio([{ text: frontText, lang: frontLang }]);
+}
+// --- FIM DO MOTOR DE ÁUDIO ---
 function escapeHtml(str) {
   return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1368,7 +1426,13 @@ async function startReviewSession() {
   await reloadData();
   const now = new Date();
   let due = state.allWords.filter(w => new Date(w.dueDate) <= now);
-  due.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  
+  // EMBARALHAMENTO (Algoritmo Fisher-Yates) - Adeus ordem previsível!
+  for (let i = due.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [due[i], due[j]] = [due[j], due[i]];
+  }
+
   const size = state.settings.sessionSize;
   if (due.length > size) due = due.slice(0, size);
   if (due.length === 0) {
@@ -1444,12 +1508,25 @@ function renderCurrentCard() {
 
   if (typing) setTimeout(() => $('#type-answer-input').focus(), 200);
 
-  // Preview de intervalos para os botões de rating
   const previews = previewIntervals(word);
   $('#int-again').textContent = previews.AGAIN;
   $('#int-hard').textContent = previews.HARD;
   $('#int-good').textContent = previews.GOOD;
   $('#int-easy').textContent = previews.EASY;
+
+  // --- NOVA LÓGICA DE ÁUDIO MANUAL E AUTOPLAY ---
+  const btnPlayFront = $('#btn-play-front');
+  if (btnPlayFront) {
+    btnPlayFront.onclick = (e) => {
+      e.stopPropagation(); // Impede de virar a carta se clicar no som
+      readFrontCard();
+    };
+  }
+
+  // Toca automaticamente SÓ SE o ajuste estiver ligado
+  if (state.settings.autoplay === 'on') {
+    setTimeout(() => readFrontCard(), 150);
+  }
 }
 
 function revealCard() {
@@ -1458,6 +1535,11 @@ function revealCard() {
   $('#flashcard').classList.add('flipped');
   $('#btn-reveal').classList.add('hidden');
   $('#rate-row').classList.remove('hidden');
+
+  // Lê a carta inteira ao virar SÓ SE estiver ligado
+  if (state.settings.autoplay === 'on') {
+    readWholeCard();
+  }
 }
 
 function checkTypedAnswerSubmit() {
@@ -1475,14 +1557,16 @@ function checkTypedAnswerSubmit() {
   const fb = $('#type-feedback');
   fb.classList.remove('hidden', 'correct', 'incorrect');
   fb.classList.add(isCorrect ? 'correct' : 'incorrect');
-  fb.textContent = isCorrect ? '✓ Correto!' : `✗ Resposta certa: ${direction === 'en-pt' ? word.portuguese : word.english}`;
+  fb.textContent = isCorrect ? '✓ Correto!' : `✗ Resposta certa: ${correctField}`;
 
   $('#rate-row').classList.remove('hidden');
-  // sugestão de rating pré-selecionada visualmente não é necessária: usuário escolhe manualmente,
-  // mas destacamos a opção mais honesta.
   $all('.rate-btn').forEach(b => b.classList.remove('suggested'));
-}
 
+  // Lê a carta inteira ao responder SÓ SE estiver ligado
+  if (state.settings.autoplay === 'on') {
+    readWholeCard();
+  }
+}
 async function submitRating(rating) {
   const s = state.session;
   if (!s || !s.revealed) return;
@@ -1762,6 +1846,7 @@ function openConfirm(title, body, onConfirm) {
 function renderSettings() {
   $all('#seg-direction .seg-opt').forEach(o => o.classList.toggle('active', o.dataset.val === state.settings.direction));
   $all('#seg-input-mode .seg-opt').forEach(o => o.classList.toggle('active', o.dataset.val === state.settings.inputMode));
+  $all('#seg-autoplay .seg-opt').forEach(o => o.classList.toggle('active', o.dataset.val === state.settings.autoplay));
   $('#select-session-size').value = String(state.settings.sessionSize);
 
   const exportSelect = $('#select-export-category');
@@ -1943,7 +2028,13 @@ function bindEvents() {
   // Review
   $('#btn-exit-review').addEventListener('click', exitReview);
   $('#flashcard').addEventListener('click', () => {
-    if (state.settings.inputMode !== 'typing' && state.session) revealCard();
+    if (state.session && state.session.revealed) {
+      // Se a carta JÁ ESTÁ virada (verso), clicar nela repete o áudio completo!
+      readWholeCard();
+    } else if (state.settings.inputMode !== 'typing' && state.session) {
+      // Se ainda não virou, o clique vira a carta
+      revealCard();
+    }
   });
   $('#btn-reveal').addEventListener('click', revealCard);
   $('#btn-check-typed').addEventListener('click', checkTypedAnswerSubmit);
@@ -2001,6 +2092,13 @@ function bindEvents() {
   $all('#seg-input-mode .seg-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       state.settings.inputMode = opt.dataset.val;
+      renderSettings();
+      saveSettings();
+    });
+  });
+  $all('#seg-autoplay .seg-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      state.settings.autoplay = opt.dataset.val;
       renderSettings();
       saveSettings();
     });
