@@ -372,7 +372,11 @@ main#views{
 .chip .swatch{width:7px;height:7px;border-radius:50%;}
 .chip.active{background:var(--surface-3);color:var(--text);border-color:var(--text-faint);}
 
-.word-list{margin-top:10px;}
+.word-list {
+    overflow-y: auto;
+    max-height: 400px;
+    margin-top: 10px;
+}
 .word-row{
   display:flex;align-items:center;gap:12px;
   padding:13px 4px;border-bottom:1px solid var(--border);
@@ -623,11 +627,13 @@ select.native-select{
 
     <!-- LIBRARY -->
     <section class="view" id="view-library">
+      <div class="vlinha">
       <div class="search-bar">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input type="text" id="search-input" placeholder="Buscar palavra...">
       </div>
       <div class="chip-row" id="filter-chips"></div>
+      </div>
       <ul class="word-list" id="word-list"></ul>
       <div id="library-empty" class="empty-state hidden">
         <div class="icon">🔎</div>
@@ -640,7 +646,7 @@ select.native-select{
     <!-- CATEGORIES -->
     <section class="view" id="view-categories">
       <div class="section-title">Suas categorias</div>
-      <ul class="word-list" id="category-list"></ul>
+      <ul class="word-list" id="category-list" ></ul>
       <button class="btn btn-secondary btn-block" id="btn-add-category" style="margin-top:16px;">+ Nova categoria</button>
       <div id="categories-empty" class="empty-state hidden">
         <div class="icon">🗂️</div>
