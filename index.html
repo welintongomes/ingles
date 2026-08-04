@@ -673,8 +673,8 @@ select.native-select{
           <div><div class="lbl">Direção</div><div class="desc">Qual idioma aparece primeiro no cartão</div></div>
           <div class="seg-control" id="seg-direction">
             <span class="seg-opt" data-val="mixed">Misto</span>
-            <span class="seg-opt" data-val="en-pt">EN→PT</span>
-            <span class="seg-opt" data-val="pt-en">PT→EN</span>
+            <span class="seg-opt" data-val="en-pt">Normal</span>
+            <span class="seg-opt" data-val="pt-en">Invertido</span>
           </div>
         </div>
         <div class="settings-row">
@@ -784,11 +784,11 @@ select.native-select{
     <div class="sheet-title" id="word-modal-title">Nova palavra</div>
     <input type="hidden" id="word-id-input">
     <div class="field">
-      <label>Inglês *</label>
+      <label>Língua 1 (Frente) *</label>
       <input type="text" id="word-english-input" placeholder="ex.: actually" autocomplete="off">
     </div>
     <div class="field">
-      <label>Português *</label>
+      <label>Língua 2 (Verso) *</label>
       <input type="text" id="word-portuguese-input" placeholder="ex.: na verdade" autocomplete="off">
       <div class="field-hint">Use "/" para mais de uma resposta aceitável, ex.: "na verdade / de fato"</div>
     </div>
@@ -796,8 +796,8 @@ select.native-select{
       <label>Categoria</label>
       <select class="native-select" id="word-category-input" style="width:100%;"></select>
     </div>
-    <div class="field">
-      <label>Frase de exemplo (inglês)</label>
+    <div class="field"> 
+      <label>Frase de exemplo</label>
       <textarea id="word-example-input" placeholder="ex.: Actually, I don't agree."></textarea>
     </div>
     <div class="field">
@@ -1247,53 +1247,47 @@ function el(tag, cls, html) {
   return e;
 }
 
-function smartDetectLang(text, categoryTag) {
-  if (!text) return 'en-US';
+function smartDetectLang(text, categoryTag, expectedLang = 'en-US') {
+  if (!text) return expectedLang;
   const t = text.toLowerCase();
   const cat = (categoryTag || '').toLowerCase();
 
-  // Regra 1: A Categoria manda em tudo (Soberana)
+  // Regra 1: A Categoria manda em tudo
   if (cat.includes('sinônimo') || cat.includes('sinonimo') || 
       cat.includes('antônimo') || cat.includes('antonimo') || 
       cat.includes('português') || cat.includes('portugues')) {
     return 'pt-BR';
   }
-  // if (cat.includes('espanhol') || cat.includes('spanish') || cat.includes('espanol')) {
-  //   return 'es-ES';
-  // }
+  if (cat.includes('espanhol') || cat.includes('spanish') || cat.includes('espanol')) {
+    return 'es-ES';
+  }
 
-  // Regra 2: Caracteres EXCLUSIVOS (Tiro e queda, não precisa nem contar)
-  // Se tem "ã", "õ" ou "ç", é impossível ser inglês ou espanhol.
+  // Regra 2: Caracteres EXCLUSIVOS
   if (/[ãõçâêô]/i.test(t)) return 'pt-BR';
-  // Se tem "ñ", "¿" ou "¡", é espanhol na hora.
   if (/[ñ¿¡]/i.test(t)) return 'es-ES';
 
-  // Regra 3: Sistema de Pontuação por Palavras (A sua ideia!)
-  // Extrai todas as palavras do texto (ignora vírgulas e pontos)
+  // Regra 3: Sistema de Pontuação por Palavras
   const words = t.match(/[a-záéíóú]+/g) || [];
-  
-  let scorePT = 0;
-  let scoreES = 0;
-  let scoreEN = 0;
+  let scorePT = 0, scoreES = 0, scoreEN = 0;
 
-  // Dicionários de palavras muito comuns (excluímos palavras traiçoeiras como "no", "do", "a")
   const ptWords = ['não','são','você','aqui','muito','isso','pelo','pela','ele','ela','quem','estou','vamos','agora','hoje','amanhã','uma','com','como','mas','qual','quando','onde'];
   const esWords = ['el','los','las','del','pero','muy','hola','gracias','cuando','donde','estoy','con','como','cual','quien'];
   const enWords = ['the','to','of','and','that','have','it','for','not','on','with','he','as','you','at','this','but','his','by','from','they','we','she','or','will','my','what','when','where','how','why','is','are','am'];
 
-  // Faz a contagem!
   words.forEach(w => {
     if (ptWords.includes(w)) scorePT++;
     if (esWords.includes(w)) scoreES++;
     if (enWords.includes(w)) scoreEN++;
   });
 
-  // O Idioma que pontuou mais ganha o jogo
   if (scorePT > scoreEN && scorePT > scoreES) return 'pt-BR';
   if (scoreES > scoreEN && scoreES > scorePT) return 'es-ES';
+  if (scoreEN > scorePT && scoreEN > scoreES) return 'en-US';
 
-  // Regra 4: Empate ou nenhum ponto? O padrão absoluto do app é Inglês
-  return 'en-US';
+  // Regra 4: A MÁGICA DA DICA!
+  // Se pontuou zero ou empatou, o robô não chuta mais Inglês. 
+  // Ele usa a dica do campo de onde o texto veio!
+  return expectedLang;
 }
 
 function playBilingualAudio(sequence) {
@@ -1311,34 +1305,50 @@ function playBilingualAudio(sequence) {
 
 function readFrontCard() {
   const { word, direction } = currentSessionWord();
-  const tag = categoryName(word.categoryId); // Pega o nome da categoria
+  const tag = categoryName(word.categoryId);
   
   const frontText = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0];
-  // Usa o novo detetive inteligente!
-  const frontLang = direction === 'en-pt' ? smartDetectLang(word.english, tag) : 'pt-BR';
+  
+  // Dica: Se o app está no modo "normal", a frente costuma ser Inglês. Se inverteu, a frente é Português.
+  const expectedFront = direction === 'en-pt' ? 'en-US' : 'pt-BR';
+  const frontLang = smartDetectLang(frontText, tag, expectedFront);
   
   playBilingualAudio([{ text: frontText, lang: frontLang }]);
 }
 
 function readWholeCard() {
-  const { word } = currentSessionWord();
+  const { word, direction } = currentSessionWord();
   const tag = categoryName(word.categoryId);
   
-  // Detetive descobre o idioma do campo principal
-  const foreignLang = smartDetectLang(word.english, tag);
+  const frontText = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0];
+  const backText = direction === 'en-pt' ? word.portuguese.split('/')[0] : word.english;
+  
+  // Dicas cruzadas para frente e verso
+  const expectedFront = direction === 'en-pt' ? 'en-US' : 'pt-BR';
+  const expectedBack = direction === 'en-pt' ? 'pt-BR' : 'en-US';
+  
+  const langFront = smartDetectLang(frontText, tag, expectedFront);
+  const langBack = smartDetectLang(backText, tag, expectedBack);
   
   const sequence = [
-    { text: word.english, lang: foreignLang },
-    { text: word.portuguese.split('/')[0], lang: 'pt-BR' },
-    { text: word.example, lang: foreignLang },
-    { text: word.exampleTranslation, lang: 'pt-BR' }
+    { text: frontText, lang: langFront },
+    { text: backText, lang: langBack }
   ];
+  
+  if (word.example) {
+    sequence.push({ text: word.example, lang: smartDetectLang(word.example, tag, 'en-US') });
+  }
+  if (word.exampleTranslation) {
+    sequence.push({ text: word.exampleTranslation, lang: smartDetectLang(word.exampleTranslation, tag, 'pt-BR') });
+  }
+  
   playBilingualAudio(sequence);
 }
-// --- FIM DO MOTOR DE ÁUDIO INTELIGENTE ---
+
 function escapeHtml(str) {
   return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
 let toastTimer = null;
 function showToast(msg) {
   const t = $('#toast');
@@ -1627,18 +1637,19 @@ function renderCurrentCard() {
 
   const frontWord = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0].trim();
   const backWord = direction === 'en-pt' ? word.portuguese.split('/')[0].trim() : word.english;
-  const dirLabel = direction === 'en-pt' ? 'inglês → português' : 'português → inglês';
+const tag = categoryName(word.categoryId);
+
+  // Passando as dicas também para escrever certo na tela!
+  const expectedFront = direction === 'en-pt' ? 'en-US' : 'pt-BR';
+  const expectedBack = direction === 'en-pt' ? 'pt-BR' : 'en-US';
+
+  const langFront = smartDetectLang(frontWord, tag, expectedFront);
+  const langBack = smartDetectLang(backWord, tag, expectedBack);
+  
+  const dictNames = { 'en-US': 'inglês', 'pt-BR': 'português', 'es-ES': 'espanhol' };
+  const dirLabel = `${dictNames[langFront]} → ${dictNames[langBack]}`;
+
   const cardNo = 'Nº ' + String(word.id).padStart(4, '0');
-  const tag = categoryName(word.categoryId);
-  // Muda a cor do fundo para não confundir sinônimo com antônimo!
-  const tagLower = tag.toLowerCase();
-  if (tagLower.includes('sinônimo') || tagLower.includes('sinonimo')) {
-    document.body.style.backgroundColor = '#1a2b4c'; // Fundo azul marinho escuro
-  } else if (tagLower.includes('antônimo') || tagLower.includes('antonimo')) {
-    document.body.style.backgroundColor = '#4c1a1a'; // Fundo vinho escuro
-  } else {
-    document.body.style.backgroundColor = ''; // Fundo padrão do app
-  }
 
   $('#card-no-front').textContent = cardNo;
   $('#card-no-back').textContent = cardNo;
