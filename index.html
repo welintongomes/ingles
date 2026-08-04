@@ -216,7 +216,7 @@ main#views{
   background:var(--surface);
   border:1px solid var(--border);
   border-radius:var(--radius-l);
-  padding:28px 24px 24px;
+  padding: 11px 24px 13px;
   text-align:center;
   position:relative;
   overflow:hidden;
@@ -483,7 +483,7 @@ select.native-select{
 .field label{display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px;}
 .field input,.field textarea{
   width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-s);
-  padding:12px 13px;font-size:14.5px;color:var(--text);
+  padding:5px 13px;font-size:14.5px;color:var(--text);
 }
 .field textarea{resize:vertical;min-height:56px;}
 .field input:focus,.field textarea:focus{border-color:var(--accent);}
@@ -506,6 +506,10 @@ select.native-select{
 #toast.show{opacity:1;transform:translate(-50%,0);}
 
 .hidden{display:none !important;}
+.centrar{
+  text-align: center;
+  padding-top: 5px;
+}
 </style>
 </head>
 <body>
@@ -525,6 +529,8 @@ select.native-select{
 
     <!-- HOME -->
     <section class="view active" id="view-home">
+      
+      
       <div class="hero-card">
         <span class="eyebrow">hoje para revisar</span>
         <div class="hero-num" id="due-count">0</div>
@@ -537,6 +543,11 @@ select.native-select{
         <div class="stat-box learning"><div class="n" id="stat-learning">0</div><div class="l">aprendendo</div></div>
         <div class="stat-box review"><div class="n" id="stat-review">0</div><div class="l">em revisão</div></div>
       </div>
+      <!-- NOVA BARRA DE FILTRO DA HOME -->
+       <div class="centrar">
+       <span><span class="eyebrow">Escolha o que deseja revisar</span>
+       </div>
+      <div class="chip-row" id="home-filter-chips" style="padding-top:4px; padding-bottom:5px; margin: 7px 3px 1px 3px;"></div>
 
       <div class="section-title">
         <span><span class="eyebrow">últimos 7 dias</span>Ritmo de estudo</span>
@@ -1219,6 +1230,7 @@ const state = {
   settings: { direction: 'mixed', inputMode: 'typing', sessionSize: 20, autoplay: 'on' },
   session: null, // { queue:[], index:0, direction, results:{again,hard,good,easy}, startedAt }
   libraryFilterCategory: 'all',
+  homeFilterCategories: [],
   librarySearch: '',
   editingWordId: null,
   editingCategoryId: null,
@@ -1234,35 +1246,87 @@ function el(tag, cls, html) {
   if (html !== undefined) e.innerHTML = html;
   return e;
 }
-// --- INÍCIO DO MOTOR DE ÁUDIO ---
-function detectForeignLang(text) {
+
+function smartDetectLang(text, categoryTag) {
   if (!text) return 'en-US';
-  // Truque offline: se tiver caracteres exclusivos ou artigos muito comuns do espanhol, assume ES.
-  // Caso contrário, assume o Inglês por padrão.
-  if (/[ñ¿¡áéíóú]/i.test(text) || /\b(el|la|los|las|un|una|y|en|que|por|para|con|de|del|al|como|más|pero|o)\b/i.test(text)) {
-    return 'es-ES';
+  const t = text.toLowerCase();
+  const cat = (categoryTag || '').toLowerCase();
+
+  // Regra 1: A Categoria manda em tudo (Soberana)
+  if (cat.includes('sinônimo') || cat.includes('sinonimo') || 
+      cat.includes('antônimo') || cat.includes('antonimo') || 
+      cat.includes('português') || cat.includes('portugues')) {
+    return 'pt-BR';
   }
+  // if (cat.includes('espanhol') || cat.includes('spanish') || cat.includes('espanol')) {
+  //   return 'es-ES';
+  // }
+
+  // Regra 2: Caracteres EXCLUSIVOS (Tiro e queda, não precisa nem contar)
+  // Se tem "ã", "õ" ou "ç", é impossível ser inglês ou espanhol.
+  if (/[ãõçâêô]/i.test(t)) return 'pt-BR';
+  // Se tem "ñ", "¿" ou "¡", é espanhol na hora.
+  if (/[ñ¿¡]/i.test(t)) return 'es-ES';
+
+  // Regra 3: Sistema de Pontuação por Palavras (A sua ideia!)
+  // Extrai todas as palavras do texto (ignora vírgulas e pontos)
+  const words = t.match(/[a-záéíóú]+/g) || [];
+  
+  let scorePT = 0;
+  let scoreES = 0;
+  let scoreEN = 0;
+
+  // Dicionários de palavras muito comuns (excluímos palavras traiçoeiras como "no", "do", "a")
+  const ptWords = ['não','são','você','aqui','muito','isso','pelo','pela','ele','ela','quem','estou','vamos','agora','hoje','amanhã','uma','com','como','mas','qual','quando','onde'];
+  const esWords = ['el','los','las','del','pero','muy','hola','gracias','cuando','donde','estoy','con','como','cual','quien'];
+  const enWords = ['the','to','of','and','that','have','it','for','not','on','with','he','as','you','at','this','but','his','by','from','they','we','she','or','will','my','what','when','where','how','why','is','are','am'];
+
+  // Faz a contagem!
+  words.forEach(w => {
+    if (ptWords.includes(w)) scorePT++;
+    if (esWords.includes(w)) scoreES++;
+    if (enWords.includes(w)) scoreEN++;
+  });
+
+  // O Idioma que pontuou mais ganha o jogo
+  if (scorePT > scoreEN && scorePT > scoreES) return 'pt-BR';
+  if (scoreES > scoreEN && scoreES > scorePT) return 'es-ES';
+
+  // Regra 4: Empate ou nenhum ponto? O padrão absoluto do app é Inglês
   return 'en-US';
 }
 
 function playBilingualAudio(sequence) {
   if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel(); // Corta qualquer fala anterior instantaneamente
+  window.speechSynthesis.cancel(); 
 
   sequence.forEach(item => {
-    if (!item.text) return; // Pula se não houver texto (ex: sem frase de exemplo)
+    if (!item.text) return; 
     const utterance = new SpeechSynthesisUtterance(item.text);
     utterance.lang = item.lang;
-    utterance.rate = 0.9; // Velocidade ideal para absorção
+    utterance.rate = 0.9; 
     window.speechSynthesis.speak(utterance);
   });
 }
 
+function readFrontCard() {
+  const { word, direction } = currentSessionWord();
+  const tag = categoryName(word.categoryId); // Pega o nome da categoria
+  
+  const frontText = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0];
+  // Usa o novo detetive inteligente!
+  const frontLang = direction === 'en-pt' ? smartDetectLang(word.english, tag) : 'pt-BR';
+  
+  playBilingualAudio([{ text: frontText, lang: frontLang }]);
+}
+
 function readWholeCard() {
   const { word } = currentSessionWord();
-  const foreignLang = detectForeignLang(word.english);
+  const tag = categoryName(word.categoryId);
   
-  // Fila de reprodução: lê tudo no idioma correto, na sequência.
+  // Detetive descobre o idioma do campo principal
+  const foreignLang = smartDetectLang(word.english, tag);
+  
   const sequence = [
     { text: word.english, lang: foreignLang },
     { text: word.portuguese.split('/')[0], lang: 'pt-BR' },
@@ -1271,15 +1335,7 @@ function readWholeCard() {
   ];
   playBilingualAudio(sequence);
 }
-function readFrontCard() {
-  const { word, direction } = currentSessionWord();
-  const foreignLang = detectForeignLang(word.english);
-  const frontLang = direction === 'en-pt' ? foreignLang : 'pt-BR';
-  const frontText = direction === 'en-pt' ? word.english : word.portuguese.split('/')[0];
-  
-  playBilingualAudio([{ text: frontText, lang: frontLang }]);
-}
-// --- FIM DO MOTOR DE ÁUDIO ---
+// --- FIM DO MOTOR DE ÁUDIO INTELIGENTE ---
 function escapeHtml(str) {
   return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1353,20 +1409,81 @@ async function updateStreak() {
 }
 
 /* ---------------- HOME VIEW ---------------- */
-function computeStats() {
+function renderHomeChips() {
+  const wrap = $('#home-filter-chips');
+  wrap.innerHTML = '';
+  
   const now = new Date();
-  let due = 0, isNew = 0, learning = 0, review = 0;
+  
+  // 1. Descobrir quais categorias têm cartas pendentes HOJE (due <= now)
+  const categoriesWithDue = new Set();
+  let hasDueNoCat = false;
+  
   for (const w of state.allWords) {
-    if (w.status === 'new') isNew++;
-    else if (w.status === 'learning') learning++;
-    else if (w.status === 'review') review++;
-    if (new Date(w.dueDate) <= now) due++;
+    if (new Date(w.dueDate) <= now) {
+      if (w.categoryId) {
+        categoriesWithDue.add(w.categoryId);
+      } else {
+        hasDueNoCat = true;
+      }
+    }
   }
-  return { due, isNew, learning, review, total: state.allWords.length };
+  
+  // 2. Limpar do filtro atual qualquer categoria que não tenha mais cartas pendentes.
+  // Isso evita o erro de ficar preso numa tela vazia se você acabou de revisar tudo dela.
+  state.homeFilterCategories = state.homeFilterCategories.filter(id => {
+    if (id === null) return hasDueNoCat;
+    return categoriesWithDue.has(id);
+  });
+
+  // 3. Renderizar o chip "Todas"
+  const allActive = state.homeFilterCategories.length === 0;
+  const allChip = el('div', 'chip' + (allActive ? ' active' : ''), 'Todas');
+  allChip.onclick = () => {
+    state.homeFilterCategories = [];
+    renderHome();
+  };
+  wrap.appendChild(allChip);
+
+  // 4. Renderizar apenas os chips das categorias que têm cartas pendentes
+  state.categories.forEach(c => {
+    if (!categoriesWithDue.has(c.id)) return; // A MÁGICA: Se não tem carta para hoje, pula (não desenha) o chip!
+
+    const isActive = state.homeFilterCategories.includes(c.id);
+    const chip = el('div', 'chip' + (isActive ? ' active' : ''));
+    chip.innerHTML = `<span class="swatch" style="background:${c.color}"></span>${escapeHtml(c.name)}`;
+    chip.onclick = () => {
+      if (isActive) {
+        state.homeFilterCategories = state.homeFilterCategories.filter(id => id !== c.id);
+      } else {
+        state.homeFilterCategories.push(c.id);
+      }
+      renderHome();
+    };
+    wrap.appendChild(chip);
+  });
+  
+  // 5. Renderizar o chip "Sem categoria" (só aparece se houver palavras avulsas pendentes)
+  if (hasDueNoCat) {
+     const noCatActive = state.homeFilterCategories.includes(null);
+     const noCatChip = el('div', 'chip' + (noCatActive ? ' active' : ''), 'Sem categoria');
+     noCatChip.onclick = () => {
+        if (noCatActive) {
+          state.homeFilterCategories = state.homeFilterCategories.filter(id => id !== null);
+        } else {
+          state.homeFilterCategories.push(null);
+        }
+        renderHome();
+     };
+     wrap.appendChild(noCatChip);
+  }
 }
 
 async function renderHome() {
   await reloadData();
+  
+  renderHomeChips(); // Desenha os botões dinâmicos na tela
+  
   const stats = computeStats();
   $('#due-count').textContent = stats.due;
   $('#due-sub').textContent = stats.due === 1 ? 'cartão esperando por você' : 'cartões esperando por você';
@@ -1382,12 +1499,36 @@ async function renderHome() {
   const navDot = $('#nav-dot-review');
   navDot.classList.toggle('show', stats.due > 0);
 
-  $('#home-empty').classList.toggle('hidden', stats.total > 0);
-  $('.hero-card').style.display = stats.total > 0 ? '' : 'none';
-  $('.stat-row').style.display = stats.total > 0 ? '' : 'none';
+  // CORREÇÃO DO BUG: Só mostra o aviso de "Sua biblioteca está vazia" se NÃO HOUVER nenhuma palavra no banco de dados.
+  // Isso impede que ele finja que você está na biblioteca caso um filtro zere a tela.
+  const hasAnyWord = state.allWords.length > 0;
+  $('#home-empty').classList.toggle('hidden', hasAnyWord);
+  $('.hero-card').style.display = hasAnyWord ? '' : 'none';
+  $('.stat-row').style.display = hasAnyWord ? '' : 'none';
 
   await renderWeekChart();
 }
+
+function computeStats() {
+  const now = new Date();
+  let due = 0, isNew = 0, learning = 0, review = 0, total = 0;
+  
+  for (const w of state.allWords) {
+    // A MÁGICA: Pula a palavra se ela não pertencer às categorias selecionadas
+    if (state.homeFilterCategories.length > 0 && !state.homeFilterCategories.includes(w.categoryId)) {
+      continue; 
+    }
+    
+    total++;
+    if (w.status === 'new') isNew++;
+    else if (w.status === 'learning') learning++;
+    else if (w.status === 'review') review++;
+    
+    if (new Date(w.dueDate) <= now) due++;
+  }
+  return { due, isNew, learning, review, total };
+}
+
 
 async function renderWeekChart() {
   const log = await getReviewLog();
@@ -1432,7 +1573,12 @@ async function startReviewSession() {
   const now = new Date();
   let due = state.allWords.filter(w => new Date(w.dueDate) <= now);
   
-  // EMBARALHAMENTO (Algoritmo Fisher-Yates) - Adeus ordem previsível!
+  // --- FILTRO INTELIGENTE: Pega apenas as cartas da(s) categoria(s) selecionada(s)
+  if (state.homeFilterCategories.length > 0) {
+    due = due.filter(w => state.homeFilterCategories.includes(w.categoryId));
+  }
+
+  // EMBARALHAMENTO (Algoritmo Fisher-Yates)
   for (let i = due.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [due[i], due[j]] = [due[j], due[i]];
@@ -1484,6 +1630,15 @@ function renderCurrentCard() {
   const dirLabel = direction === 'en-pt' ? 'inglês → português' : 'português → inglês';
   const cardNo = 'Nº ' + String(word.id).padStart(4, '0');
   const tag = categoryName(word.categoryId);
+  // Muda a cor do fundo para não confundir sinônimo com antônimo!
+  const tagLower = tag.toLowerCase();
+  if (tagLower.includes('sinônimo') || tagLower.includes('sinonimo')) {
+    document.body.style.backgroundColor = '#1a2b4c'; // Fundo azul marinho escuro
+  } else if (tagLower.includes('antônimo') || tagLower.includes('antonimo')) {
+    document.body.style.backgroundColor = '#4c1a1a'; // Fundo vinho escuro
+  } else {
+    document.body.style.backgroundColor = ''; // Fundo padrão do app
+  }
 
   $('#card-no-front').textContent = cardNo;
   $('#card-no-back').textContent = cardNo;
