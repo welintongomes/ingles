@@ -1578,17 +1578,27 @@ function pickDirection() {
   return state.settings.direction;
 }
 
+
 async function startReviewSession() {
+  // Garante que os dados do banco foram recarregados antes de processar
   await reloadData();
+  
   const now = new Date();
   let due = state.allWords.filter(w => new Date(w.dueDate) <= now);
   
-  // --- FILTRO INTELIGENTE: Pega apenas as cartas da(s) categoria(s) selecionada(s)
-  if (state.homeFilterCategories.length > 0) {
+  // Se estiver filtrado na Home, aplica o filtro
+  if (state.homeFilterCategories && state.homeFilterCategories.length > 0) {
     due = due.filter(w => state.homeFilterCategories.includes(w.categoryId));
   }
 
-  // EMBARALHAMENTO (Algoritmo Fisher-Yates)
+  // BARREIRA DE SEGURANÇA: Se não houver nada para revisar, nem abre a tela!
+  if (due.length === 0) {
+    switchView('home');
+    showToast('Nenhuma carta pendente para revisar 🎉');
+    return;
+  }
+
+  // Embaralhamento (Fisher-Yates)
   for (let i = due.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [due[i], due[j]] = [due[j], due[i]];
@@ -1596,11 +1606,7 @@ async function startReviewSession() {
 
   const size = state.settings.sessionSize;
   if (due.length > size) due = due.slice(0, size);
-  if (due.length === 0) {
-    switchView('home');
-    showToast('Nada para revisar agora 🎉');
-    return;
-  }
+
   state.session = {
     queue: due.map(w => ({ wordId: w.id, direction: pickDirection() })),
     index: 0,
@@ -1608,6 +1614,7 @@ async function startReviewSession() {
     results: { again: 0, hard: 0, good: 0, easy: 0 },
     revealed: false,
   };
+
   $('#review-session').classList.remove('hidden');
   $('#review-empty').classList.add('hidden');
   $('#review-done').classList.add('hidden');
@@ -2298,6 +2305,11 @@ async function init() {
     showToast('Erro ao acessar o armazenamento local');
     return;
   }
+  
+  // TRAVA O BOTÃO DE REVISÃO ENQUANTO CARREGA
+  const btnReview = $('#btn-start-review');
+  if (btnReview) btnReview.disabled = true;
+
   await reloadData();
   const savedSettings = await dbGetMeta('settings', null);
   if (savedSettings) Object.assign(state.settings, savedSettings);
